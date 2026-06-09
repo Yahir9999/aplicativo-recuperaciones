@@ -870,46 +870,53 @@ function limpiarFormulario() {
 
 }
 
-function generarPDF() {
+async function generarPDF() {
 
     const { jsPDF } = window.jspdf;
-
     const doc = new jsPDF();
 
-    // Título centrado y en negritas
+    const logo = await cargarImagenBase64("iconos/logo_azul.png");
+    const marcaAgua = await cargarImagenBase64("iconos/marca_de_agua.png");
+
+    // Logo superior
+    doc.addImage(
+        logo,
+        "PNG",
+        75,
+        8,
+        60,
+        20
+    );
+
+    // Título
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(15);
+    doc.setFontSize(24);
 
     doc.text(
         "RECUPERACIÓN DE ESTRUCTURAS DE METAL",
         doc.internal.pageSize.getWidth() / 2,
-        30,
+        40,
         { align: "center" }
     );
 
     // Datos generales
     doc.setFont("helvetica", "normal");
-doc.setFontSize(45);
+    doc.setFontSize(18);
 
-doc.text(
-    `Folio: ${ultimoFolio}`,
-    15,
-    40
-);
+    doc.text(`Folio: ${ultimoFolio}`, 15, 55);
+    doc.text(`Fecha: ${ultimaFecha}`, 15, 67);
+    doc.text(`CEDI: ${ultimoCedi}`, 15, 79);
 
-doc.text(
-    `Fecha: ${ultimaFecha}`,
-    15,
-    60
-);
+    // Marca de agua detrás de la tabla
+    doc.addImage(
+        marcaAgua,
+        "PNG",
+        45,
+        95,
+        120,
+        120
+    );
 
-doc.text(
-    `CEDI: ${ultimoCedi}`,
-    15,
-    80
-);
-
-    // Tabla
     const filas = ultimoLoteRegistrado.map((pieza, index) => [
         index + 1,
         pieza.estado,
@@ -918,39 +925,66 @@ doc.text(
     ]);
 
     doc.autoTable({
+        startY: 95,
 
-    startY: 100,
+        head: [[
+            "#",
+            "Estado",
+            "Tipo de Estructura",
+            "Serie"
+        ]],
 
-    head: [[
-        "#",
-        "Estado",
-        "Tipo de Estructura",
-        "Serie"
-    ]],
+        body: filas,
 
-    body: filas,
+        styles: {
+            fontSize: 12,
+            cellPadding: 2,
+            halign: "center",
+            valign: "middle",
+            fillColor: false
+        },
 
-    styles: {
-        fontSize: 13,
-        cellPadding: 2
-    },
+        headStyles: {
+            fontSize: 12,
+            fontStyle: "bold",
+            fillColor: [0, 0, 0],
+            textColor: [255, 255, 255]
+        },
 
-    headStyles: {
-        fontSize: 13,
-        fontStyle: "bold"
-    }
+        bodyStyles: {
+            fillColor: false
+        }
+    });
 
-});
-
-    // Total
     doc.setFont("helvetica", "bold");
-doc.setFontSize(11);
+    doc.setFontSize(12);
 
-doc.text(
-    `Total de piezas: ${ultimoLoteRegistrado.length}`,
-    15,
-    doc.lastAutoTable.finalY + 10
-);
+    doc.text(
+        `Total de piezas: ${ultimoLoteRegistrado.length}`,
+        15,
+        doc.lastAutoTable.finalY + 12
+    );
 
     doc.save(`${ultimoFolio}.pdf`);
+}
+
+
+function cargarImagenBase64(ruta) {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+
+        img.onload = () => {
+            const canvas = document.createElement("canvas");
+            canvas.width = img.width;
+            canvas.height = img.height;
+
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0);
+
+            resolve(canvas.toDataURL("image/png"));
+        };
+
+        img.src = ruta;
+    });
 }
