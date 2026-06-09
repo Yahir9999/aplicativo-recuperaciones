@@ -903,14 +903,14 @@ doc.addImage(
     logo,
     "PNG",
     xLogo,
-    8,
+    6,
     logoWidth,
     logoHeight
 );
 
     // Título
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(28);
+    doc.setFontSize(23);
     doc.text(
         "RECUPERACIÓN DE ESTRUCTURAS DE METAL",
         doc.internal.pageSize.getWidth() / 2,
