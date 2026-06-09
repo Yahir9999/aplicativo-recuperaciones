@@ -8,7 +8,7 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "iconos/logo.png",
+      "src": "iconos/icono_recuperacion.png",
       "sizes": "192x192",
       "type": "image/png"
     },
