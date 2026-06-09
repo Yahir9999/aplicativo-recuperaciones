@@ -1,0 +1,344 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Segoe UI", sans-serif;
+    background: #000000;
+    color: #333;
+}
+
+/* =========================
+   CONTENEDOR
+========================= */
+
+.container {
+    max-width: 700px;
+    margin: auto;
+    padding: 1rem;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.app-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.app-header img {
+    width: 220px;
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 1rem;
+}
+
+.app-header h1 {
+    font-size: 1.8rem;
+    color: #ffffff;
+}
+
+/* =========================
+   CARDS
+========================= */
+
+.card {
+    background: white;
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+
+    box-shadow: 0 2px 10px rgba(0,0,0,.08);
+}
+
+.card h2 {
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    color: #374151;
+}
+
+/* =========================
+   CAMPOS
+========================= */
+
+.campo {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+}
+
+.campo label {
+    margin-bottom: .4rem;
+    font-weight: 600;
+}
+
+.campo input,
+.campo select {
+    height: 45px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 0 .75rem;
+    font-size: 1rem;
+}
+
+.campo input:focus,
+.campo select:focus {
+    outline: none;
+    border-color: #050505;
+}
+
+/* =========================
+   TIPO DE CAPTURA
+========================= */
+
+.tipo-captura {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .75rem;
+}
+
+.opcion-captura {
+    border: 2px solid #d1d5db;
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: .2s;
+    font-weight: 600;
+}
+
+.opcion-captura:hover {
+    border-color: #000000;
+}
+
+.opcion-captura.activa {
+    background: #171a22;
+    color: white;
+    border-color: #090909;
+}
+
+/* =========================
+   COMPONENTES
+========================= */
+
+.componentes {
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    gap: .75rem;
+    margin-bottom: 1rem;
+}
+
+.componentes div {
+    background: #eef2ff;
+    border-radius: 10px;
+    padding: .75rem;
+    text-align: center;
+    font-weight: 600;
+}
+
+/* =========================
+   CONTADOR
+========================= */
+
+.contador-card {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+
+#contadorActual {
+    font-size: 4rem;
+    font-weight: 700;
+}
+
+.contador-card span:last-child {
+    font-size: 1.5rem;
+}
+/* =========================
+   PROGRESS
+========================= */
+
+progress {
+    width: 100%;
+    height: 18px;
+}
+
+/* =========================
+   BOTONES
+========================= */
+
+button {
+    border: none;
+    cursor: pointer;
+    border-radius: 10px;
+    font-size: 1rem;
+}
+
+.btn-primary {
+    width: 100%;
+    background: #000000;
+    color: white;
+    padding: .9rem;
+    margin-top: .5rem;
+}
+
+.btn-primary:hover {
+    background: #000000;
+}
+
+.acciones {
+    display: flex;
+    flex-direction: column;
+    gap: .75rem;
+}
+
+#btnRegistrar {
+    background: #646765;
+    color: white;
+    padding: 1rem;
+}
+
+#btnRegistrar:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+}
+
+#btnPDF {
+    background: #5e5b5b;
+    color: white;
+    padding: 1rem;
+}
+
+/* =========================
+   TABLA
+========================= */
+
+.tabla-container {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background: #000000;
+    color: white;
+}
+
+th,
+td {
+    padding: .75rem;
+    border: 1px solid #e5e7eb;
+    text-align: center;
+}
+
+tbody tr:nth-child(even) {
+    background: #f9fafb;
+}
+
+/* =========================
+   UTILIDADES
+========================= */
+
+.oculto {
+    display: none;
+}
+
+input:focus,
+select:focus {
+    outline: none;
+    border-color: #cfcfcf;
+    box-shadow: none;
+}
+
+select option {
+    background: white;
+    color: black;
+}
+
+/* =========================
+   TIPO DE CAPTURA
+========================= */
+
+.tipo-captura {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.opcion-captura {
+    background: #f8f9fb;
+    border: 2px solid #d1d5db;
+    border-radius: 15px;
+
+    padding: 1.5rem 1rem;
+
+    text-align: center;
+
+    cursor: pointer;
+
+    transition: all .25s ease;
+}
+
+.opcion-captura span {
+    display: block;
+    font-size: 2rem;
+    margin-bottom: .5rem;
+}
+
+.opcion-captura p {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.opcion-captura:hover {
+    transform: translateY(-2px);
+}
+
+.opcion-captura.activa {
+    background: #000;
+    color: white;
+    border-color: #000;
+}
+
+.barra-progreso {
+    width: 100%;
+    height: 12px;
+    background: #d9d9d9;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+#progresoFill {
+    width: 0%;
+    height: 100%;
+    background: #000;
+    transition: .3s;
+}
+
+
+/* eliminar registros*/
+.btn-eliminar {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 1.1rem;
+}
+
+.btn-eliminar:hover {
+    transform: scale(1.15);
+}
+
+#reader {
+    width: 100%;
+    margin-top: 1rem;
+    border-radius: 12px;
+    overflow: hidden;
+}

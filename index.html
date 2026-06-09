@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recuperaciones</title>
+
+    <link rel="stylesheet" href="css/styles.css">
+
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#000000">
+
+</head>
+<body>
+
+    <main class="container">
+
+       <header class="app-header">
+            <img src="iconos/logo.png" alt="Logo">
+            <h1>RECUPERACIONES DE ESTRUCTURAS DE METAL</h1>
+       </header>
+
+        <!-- DATOS GENERALES -->
+
+        <section class="card">
+
+            <div class="campo">
+                <label>Fecha</label>
+                <input type="date" id="fecha">
+            </div>
+
+            <div class="campo">
+                <label>CEDI</label>
+                <select id="cedi">
+                    <option value="">Seleccionar</option>
+                </select>
+            </div>
+
+            <div class="campo">
+                <label>Auxiliar</label>
+                <select id="auxiliar">
+                    <option value="">Seleccionar</option>
+                </select>
+            </div>
+
+        </section>
+
+        <!-- TIPO DE CAPTURA -->
+
+        <section class="card">
+
+            <h2>Tipo de Captura</h2>
+
+            <div class="tipo-captura">
+
+                <div
+                    class="opcion-captura"
+                    data-tipo="BUEN ESTADO">
+
+                    <span>✅</span>
+                    <p>Buen Estado</p>
+
+                </div>
+
+                <div
+                    class="opcion-captura"
+                    data-tipo="DANADA">
+
+                    <span>⚠️</span>
+                    <p>Dañada</p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- BUEN ESTADO -->
+
+        <section
+            id="seccionBuenEstado"
+            class="card oculto">
+
+            <h2>Buen Estado</h2>
+
+            <div class="campo">
+                <label>Tipo de Estructura</label>
+
+                <select id="estructuraBuenEstado">
+                    <option value="">
+                        Seleccionar
+                    </option>
+                </select>
+            </div>
+
+            <div class="componentes">
+
+                <div>Bases: <span id="bases">0</span></div>
+                <div>Tapa: <span id="tapa">0</span></div>
+                <div>Poste: <span id="poste">0</span></div>
+                <div>H: <span id="h">0</span></div>
+                <div>Travesaño: <span id="travesano">0</span></div>
+
+            </div>
+
+            <div class="campo">
+
+                <label>Número de Serie</label>
+
+                <input
+                    type="text"
+                    id="serieBuenEstado"
+                    placeholder="Escanea la serie">
+
+            </div>
+
+
+            <button id="btnEscanear" class="btn-primary">
+                📷 Escanear Serie
+            </button>
+
+            <div id="reader" class="oculto"></div>
+
+        </section>
+
+        <!-- DAÑADA -->
+
+        <section
+            id="seccionDanada"
+            class="card oculto">
+
+            <h2>Material Dañado</h2>
+
+            <div class="campo">
+                <label>Estado</label>
+
+                <select id="estadoDanado">
+
+                    <option value="">
+                        Seleccionar
+                    </option>
+
+                    <option value="SIN NUMERO DE SERIE">
+                        Sin número de serie
+                    </option>
+
+                    <option value="NUMERO DE SERIE NO VISIBLE">
+                        Número de serie no visible
+                    </option>
+
+                    <option value="DOBLADA">
+                        Doblada
+                    </option>
+
+                    <option value="ROTA">
+                        Rota
+                    </option>
+
+                </select>
+            </div>
+
+            <div class="campo">
+                <label>Tipo de Estructura</label>
+
+                <select id="estructuraDanada">
+                    <option value="">
+                        Seleccionar
+                    </option>
+                </select>
+            </div>
+
+            <div class="campo">
+
+                <label>Número de Serie</label>
+
+                <input
+                    type="text"
+                    id="serieDanada">
+
+            </div>
+
+            <button id="btnAgregar">
+                Agregar Pieza
+            </button>
+
+        </section>
+
+        <!-- CONTADOR -->
+
+        <section class="card">
+
+            <h2>Piezas Capturadas</h2>
+
+            <div class="contador-card">
+                <span id="contadorActual">0</span>
+                <span>/</span>
+                <span id="contadorLimite">16</span>
+            </div>
+
+            <div class="barra-progreso">
+                <div id="progresoFill"></div>
+            </div>
+
+
+        </section>
+
+        <!-- TABLA -->
+
+        <section class="card">
+
+            <h2>Registros Capturados</h2>
+
+            <div class="tabla-container">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Estado</th>
+                            <th>Estructura</th>
+                            <th>Serie</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="tablaRegistros">
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+        <!-- ACCIONES -->
+
+        <section class="acciones">
+
+            <button
+                id="btnRegistrar"
+                disabled>
+
+                Registrar
+
+            </button>
+
+            <button
+                id="btnPDF"
+                disabled>
+
+                Descargar PDF
+
+            </button>
+
+        </section>
+
+    </main>
+
+    <script src="https://unpkg.com/html5-qrcode"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
+    <script src="js/scanner.js"></script>
+    <script src="js/app.js"></script>
+
+    <script>
+    if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("service_worker.js");
+    }
+</script>
+
+</body>
+</html>
