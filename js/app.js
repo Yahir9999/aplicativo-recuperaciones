@@ -872,7 +872,7 @@ function limpiarFormulario() {
 
 async function generarPDF() {
 
-    alert("VERSION NUEVA");
+    
 
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
@@ -882,7 +882,31 @@ async function generarPDF() {
     const marcaAgua = await cargarImagenBase64("iconos/marca_de_agua.png");
 
     // Logo superior
-    doc.addImage(logo, "PNG", 75, 8, 60, 18);
+    // Obtener dimensiones originales del logo
+const imgProps =
+    doc.getImageProperties(logo);
+
+// Ancho deseado del logo
+const logoWidth = 90;
+
+// Calcular altura manteniendo proporción
+const logoHeight =
+    (imgProps.height * logoWidth) /
+    imgProps.width;
+
+// Centrar logo
+const xLogo =
+    (doc.internal.pageSize.getWidth() - logoWidth) / 2;
+
+// Insertar logo
+doc.addImage(
+    logo,
+    "PNG",
+    xLogo,
+    8,
+    logoWidth,
+    logoHeight
+);
 
     // Título
     doc.setFont("helvetica", "bold");
@@ -896,7 +920,7 @@ async function generarPDF() {
 
     // Datos generales
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(18);
+    doc.setFontSize(43);
 
     doc.text(`Folio: ${ultimoFolio}`, 15, 50);
     doc.text(`Fecha: ${ultimaFecha}`, 15, 62);
