@@ -872,6 +872,8 @@ function limpiarFormulario() {
 
 async function generarPDF() {
 
+    alert("VERSION NUEVA");
+
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
 
