@@ -207,11 +207,11 @@ const LIMITE = 16;
 
 const LIMITES_BUEN_ESTADO = {
 
-    "NACIONAL": 8,
-    "CHINA": 8,
+    "G2N": 8,
+    "G2C": 8,
     "G4Y": 7,
     "G4B": 7,
-    "CUATRI": 9
+    "ATV": 6
 
 };
 
@@ -883,7 +883,7 @@ function generarPDF() {
     doc.text(
         "RECUPERACIÓN DE ESTRUCTURAS DE METAL",
         doc.internal.pageSize.getWidth() / 2,
-        20,
+        30,
         { align: "center" }
     );
 
