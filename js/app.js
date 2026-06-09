@@ -910,7 +910,7 @@ doc.addImage(
 
     // Título
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(16);
+    doc.setFontSize(28);
     doc.text(
         "RECUPERACIÓN DE ESTRUCTURAS DE METAL",
         doc.internal.pageSize.getWidth() / 2,
