@@ -1,4 +1,4 @@
-const CACHE_NAME = "recuperaciones-v8";
+const CACHE_NAME = "recuperaciones-v9";
 
 const FILES_TO_CACHE = [
   "/",

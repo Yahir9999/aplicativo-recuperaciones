@@ -107,27 +107,23 @@
 
             </div>
 
-            <div class="campo">
-
-                <label>Número de Serie</label>
-
-                <input
-                    type="text"
-                    id="serieBuenEstado"
-                    placeholder="Escanea la serie">
-
-                    <p id="mensajeScanner" class="mensaje-error oculto"></p>
-                    
-
-            </div>
-
-
             <button id="btnEscanear" class="btn-primary">
                 📷 Escanear Serie
             </button>
 
             <div class="captura-manual">
-                <span>o escribe la serie</span>
+                o escribe la serie
+            </div>
+
+            <div class="campo">
+                <label>Número de Serie</label>
+
+                <input
+                    type="text"
+                    id="serieBuenEstado"
+                    placeholder="Escribe la serie y presiona Enter">
+
+                <p id="mensajeScanner" class="mensaje-error oculto"></p>
             </div>
 
             
@@ -170,36 +166,24 @@
                 </select>
             </div>
 
-            <div class="campo">
-                <label>Tipo de Estructura</label>
+                    <button id="btnEscanearDanada" class="btn-primary">
+            📷 Escanear Serie
+        </button>
 
-                <select id="estructuraDanada">
-                    <option value="">
-                        Seleccionar
-                    </option>
-                </select>
-            </div>
+        <div class="captura-manual">
+            o escribe la serie
+        </div>
 
-            <div class="campo">
-
+        <div class="campo">
             <label>Número de Serie</label>
 
             <input
                 type="text"
                 id="serieDanada"
-                placeholder="Escanea la serie">
-
+                placeholder="Escribe la serie">
         </div>
 
-        <button id="btnEscanearDanada" class="btn-primary">
-            📷 Escanear Serie
-        </button>
-
-        <div class="captura-manual">
-            <span>o escribe la serie</span>
-        </div>
-
-        <button id="btnAgregar">
+        <button id="btnAgregar" class="btn-secondary">
             Agregar Pieza
         </button>
 
@@ -291,7 +275,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 
     <script src="js/scanner.js?v=2"></script>
-    <script src="js/app.js?v=8"></script>
+    <script src="js/app.js?v=9"></script>
 
     <script>
     if ("serviceWorker" in navigator) {

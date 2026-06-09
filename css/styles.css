@@ -353,14 +353,18 @@ select option {
     text-align: center;
 }
 
-.captura-manual{
+.captura-manual {
     text-align: center;
-    margin-top: 12px;
-    margin-bottom: 10px;
+    margin: 14px 0 10px;
+    color: #6b7280;
+    font-size: 0.9rem;
+    font-weight: 600;
 }
 
-.captura-manual span{
-    color: #6b7280;
-    font-size: .9rem;
-    font-style: italic;
+.btn-secondary {
+    width: 100%;
+    background: #4b5563;
+    color: white;
+    padding: .9rem;
+    margin-top: .5rem;
 }
