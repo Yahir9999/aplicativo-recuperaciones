@@ -487,11 +487,7 @@ if (lote.length === 0) {
 actualizarContador();
 renderizarTabla();
 
-if (lote.length >= limiteEstructura) {
 
-    detenerScanner();
-
-}
 
 });
 
