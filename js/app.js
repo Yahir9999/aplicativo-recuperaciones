@@ -310,7 +310,12 @@ btnAgregar.addEventListener("click", () => {
 
     if (lote.length >= LIMITE) {
 
-        alert("Ya se alcanzó el límite de estructuras");
+        detenerScanner();
+
+        mostrarMensajeScanner(
+            "Ya se alcanzó el límite de estructuras"
+        );
+
         return;
 
     }
@@ -326,14 +331,20 @@ btnAgregar.addEventListener("click", () => {
 
     if (!estado) {
 
-        alert("Selecciona un estado");
+        mostrarMensajeScanner(
+            "Selecciona un estado"
+        );
+
         return;
 
     }
 
     if (!estructura) {
 
-        alert("Selecciona una estructura");
+        mostrarMensajeScanner(
+            "Selecciona una estructura"
+        );
+
         return;
 
     }
@@ -343,19 +354,19 @@ btnAgregar.addEventListener("click", () => {
         !serie
     ) {
 
-        alert("Captura una serie");
+        mostrarMensajeScanner(
+            "Captura una serie"
+        );
+
         return;
 
     }
-
-    // Buscar datos de la estructura
 
     const datosEstructura =
         catalogos.estructuras.find(
             item => item[0] === estructura
         );
 
-    // Validar series duplicadas
     const existe = lote.some(
         item => item.serie === serie
     );
@@ -365,9 +376,17 @@ btnAgregar.addEventListener("click", () => {
         existe
     ) {
 
-        alert(
+        mostrarMensajeScanner(
             "La serie ya fue capturada"
         );
+
+        document.getElementById(
+            "serieDanada"
+        ).value = "";
+
+        document.getElementById(
+            "serieDanada"
+        ).focus();
 
         return;
 
@@ -492,28 +511,38 @@ document.addEventListener(
         cargarAuxiliares
       );
 
-      document
-    .getElementById("btnEscanear")
-    .addEventListener(
+    // Escáner para Buen Estado
+    document
+      .getElementById("btnEscanear")
+      .addEventListener(
         "click",
-        iniciarScanner
-    );
+        () => iniciarScanner("BUEN_ESTADO")
+      );
+
+    // Escáner para Dañada
+    document
+      .getElementById("btnEscanearDanada")
+      .addEventListener(
+        "click",
+        () => iniciarScanner("DANADA")
+      );
 
     document
-        .getElementById("estructuraBuenEstado")
-        .addEventListener(
-            "change",
-            (e) => {
+      .getElementById("estructuraBuenEstado")
+      .addEventListener(
+        "change",
+        (e) => {
 
-            actualizarComponentes(
-                e.target.value
-            );
+          actualizarComponentes(
+            e.target.value
+          );
 
-            actualizarContador();
+          actualizarContador();
 
-            }
-        );
+        }
+      );
 
+    // Captura manual Buen Estado con Enter
     document
       .getElementById("serieBuenEstado")
       .addEventListener(
@@ -531,19 +560,39 @@ document.addEventListener(
         }
       );
 
-            document
-        .getElementById("btnRegistrar")
-        .addEventListener(
-            "click",
-            registrarRecuperaciones
-        );
+    // Captura manual Dañada con Enter
+    document
+      .getElementById("serieDanada")
+      .addEventListener(
+        "keydown",
+        (e) => {
 
-        document
-        .getElementById("btnPDF")
-        .addEventListener(
-            "click",
-            generarPDF
-        );
+          if (e.key === "Enter") {
+
+            e.preventDefault();
+
+            document
+              .getElementById("btnAgregar")
+              .click();
+
+          }
+
+        }
+      );
+
+    document
+      .getElementById("btnRegistrar")
+      .addEventListener(
+        "click",
+        registrarRecuperaciones
+      );
+
+    document
+      .getElementById("btnPDF")
+      .addEventListener(
+        "click",
+        generarPDF
+      );
 
   }
 );
@@ -613,8 +662,8 @@ function agregarSerieBuenEstado() {
 
     detenerScanner();
 
-    alert(
-        `Solo se permiten ${limiteEstructura} series para ${estructura}`
+    mostrarMensajeScanner(
+        `Límite alcanzado: ${limiteEstructura} series para ${estructura}`
     );
 
     return;
@@ -629,19 +678,25 @@ function agregarSerieBuenEstado() {
 
     if (existe) {
 
-        alert(
-            "La serie ya fue capturada"
-        );
+    mostrarMensajeScanner(
+        "La serie ya fue capturada"
+    );
 
-        document
-            .getElementById(
-                "serieBuenEstado"
-            )
-            .value = "";
+    document
+        .getElementById(
+            "serieBuenEstado"
+        )
+        .value = "";
 
-        return;
+    document
+        .getElementById(
+            "serieBuenEstado"
+        )
+        .focus();
 
-    }
+    return;
+
+}
 
     const datosEstructura =
         catalogos.estructuras.find(
@@ -984,4 +1039,21 @@ function cargarImagenBase64(ruta) {
 
         img.src = ruta;
     });
+}
+
+function mostrarMensajeScanner(texto) {
+
+    const mensaje =
+        document.getElementById("mensajeScanner");
+
+    mensaje.textContent = texto;
+    mensaje.classList.remove("oculto");
+
+    setTimeout(() => {
+
+        mensaje.classList.add("oculto");
+        mensaje.textContent = "";
+
+    }, 2500);
+
 }

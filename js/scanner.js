@@ -1,16 +1,21 @@
 let scannerActivo = false;
 let html5QrCode = null;
 let scannerPausado = false;
+let modoScanner = "BUEN_ESTADO";
 
-function iniciarScanner() {
+function iniciarScanner(modo = "BUEN_ESTADO") {
 
-    const reader = document.getElementById("reader");
+    modoScanner = modo;
+
+    const reader =
+        document.getElementById("reader");
 
     reader.classList.remove("oculto");
 
     if (scannerActivo) return;
 
-    html5QrCode = new Html5Qrcode("reader");
+    html5QrCode =
+        new Html5Qrcode("reader");
 
     html5QrCode.start(
         { facingMode: "environment" },
@@ -27,10 +32,25 @@ function iniciarScanner() {
 
             scannerPausado = true;
 
-            document.getElementById("serieBuenEstado").value =
-                decodedText;
+            if (modoScanner === "BUEN_ESTADO") {
 
-            agregarSerieBuenEstado();
+                document
+                    .getElementById("serieBuenEstado")
+                    .value = decodedText;
+
+                agregarSerieBuenEstado();
+
+            } else {
+
+                document
+                    .getElementById("serieDanada")
+                    .value = decodedText;
+
+                document
+                    .getElementById("btnAgregar")
+                    .click();
+
+            }
 
             setTimeout(() => {
                 scannerPausado = false;

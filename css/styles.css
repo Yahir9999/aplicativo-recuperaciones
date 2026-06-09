@@ -342,3 +342,13 @@ select option {
     border-radius: 12px;
     overflow: hidden;
 }
+
+.mensaje-error {
+    margin-top: 0.5rem;
+    background: #ffe5e5;
+    color: #b00020;
+    padding: 0.75rem;
+    border-radius: 8px;
+    font-weight: 600;
+    text-align: center;
+}
