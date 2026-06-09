@@ -875,27 +875,20 @@ async function generarPDF() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
 
+    // Imágenes
     const logo = await cargarImagenBase64("iconos/logo_azul.png");
     const marcaAgua = await cargarImagenBase64("iconos/marca_de_agua.png");
 
     // Logo superior
-    doc.addImage(
-        logo,
-        "PNG",
-        75,
-        8,
-        60,
-        20
-    );
+    doc.addImage(logo, "PNG", 75, 8, 60, 18);
 
     // Título
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(24);
-
+    doc.setFontSize(16);
     doc.text(
         "RECUPERACIÓN DE ESTRUCTURAS DE METAL",
         doc.internal.pageSize.getWidth() / 2,
-        40,
+        35,
         { align: "center" }
     );
 
@@ -903,20 +896,21 @@ async function generarPDF() {
     doc.setFont("helvetica", "normal");
     doc.setFontSize(18);
 
-    doc.text(`Folio: ${ultimoFolio}`, 15, 55);
-    doc.text(`Fecha: ${ultimaFecha}`, 15, 67);
-    doc.text(`CEDI: ${ultimoCedi}`, 15, 79);
+    doc.text(`Folio: ${ultimoFolio}`, 15, 50);
+    doc.text(`Fecha: ${ultimaFecha}`, 15, 62);
+    doc.text(`CEDI: ${ultimoCedi}`, 15, 74);
 
-    // Marca de agua detrás de la tabla
+    // Marca de agua
     doc.addImage(
         marcaAgua,
         "PNG",
         45,
-        95,
+        90,
         120,
         120
     );
 
+    // Tabla
     const filas = ultimoLoteRegistrado.map((pieza, index) => [
         index + 1,
         pieza.estado,
@@ -925,39 +919,35 @@ async function generarPDF() {
     ]);
 
     doc.autoTable({
-        startY: 95,
-
-        head: [[
-            "#",
-            "Estado",
-            "Tipo de Estructura",
-            "Serie"
-        ]],
-
+        startY: 90,
+        head: [["#", "Estado", "Tipo de Estructura", "Serie"]],
         body: filas,
 
         styles: {
-            fontSize: 12,
-            cellPadding: 2,
+            fontSize: 10,
+            cellPadding: 3,
             halign: "center",
-            valign: "middle",
             fillColor: false
         },
 
         headStyles: {
-            fontSize: 12,
+            fontSize: 10,
             fontStyle: "bold",
-            fillColor: [0, 0, 0],
+            fillColor: [40, 132, 184],
             textColor: [255, 255, 255]
         },
 
         bodyStyles: {
             fillColor: false
+        },
+
+        alternateRowStyles: {
+            fillColor: false
         }
     });
 
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(12);
+    doc.setFontSize(10);
 
     doc.text(
         `Total de piezas: ${ultimoLoteRegistrado.length}`,
@@ -967,7 +957,6 @@ async function generarPDF() {
 
     doc.save(`${ultimoFolio}.pdf`);
 }
-
 
 function cargarImagenBase64(ruta) {
     return new Promise((resolve) => {
