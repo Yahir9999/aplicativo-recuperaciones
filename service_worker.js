@@ -1,4 +1,4 @@
-const CACHE_NAME = "recuperaciones-v9";
+<script src="js/app.js?v=10"></script>
 
 const FILES_TO_CACHE = [
   "/",
