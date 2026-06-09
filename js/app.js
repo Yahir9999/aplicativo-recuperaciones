@@ -468,6 +468,12 @@ if (lote.length === 0) {
 actualizarContador();
 renderizarTabla();
 
+if (lote.length >= limiteEstructura) {
+
+    detenerScanner();
+
+}
+
 });
 
 
@@ -605,13 +611,15 @@ function agregarSerieBuenEstado() {
 
     if (lote.length >= limiteEstructura) {
 
-        alert(
-            `Solo se permiten ${limiteEstructura} series para ${estructura}`
-        );
+    detenerScanner();
 
-        return;
+    alert(
+        `Solo se permiten ${limiteEstructura} series para ${estructura}`
+    );
 
-    }
+    return;
+
+}
 
     // validar duplicados
 
@@ -878,7 +886,7 @@ async function generarPDF() {
     const doc = new jsPDF();
 
     // Imágenes
-    const logo = await cargarImagenBase64("iconos/logo_azul.png");
+    //const logo = await cargarImagenBase64("iconos/logo_azul.png");
     const marcaAgua = await cargarImagenBase64("iconos/marca_de_agua.png");
 
     // Logo superior
@@ -899,14 +907,14 @@ const xLogo =
     (doc.internal.pageSize.getWidth() - logoWidth) / 2;
 
 // Insertar logo
-doc.addImage(
+//doc.addImage(
     logo,
-    "PNG",
-    xLogo,
-    6,
-    logoWidth,
-    logoHeight
-);
+  //  "PNG",
+  //  xLogo,
+ //   6,
+   // logoWidth,
+  //  logoHeight
+//);
 
     // Título
     doc.setFont("helvetica", "bold");
