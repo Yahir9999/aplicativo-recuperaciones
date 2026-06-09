@@ -920,7 +920,7 @@ doc.addImage(
 
     // Datos generales
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(43);
+    doc.setFontSize(42);
 
     doc.text(`Folio: ${ultimoFolio}`, 15, 50);
     doc.text(`Fecha: ${ultimaFecha}`, 15, 62);
