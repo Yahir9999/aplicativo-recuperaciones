@@ -880,49 +880,22 @@ function limpiarFormulario() {
 
 async function generarPDF() {
 
-    
-
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
 
-    // Imágenes
-    //const logo = await cargarImagenBase64("iconos/logo_azul.png");
-    const marcaAgua = await cargarImagenBase64("iconos/marca_de_agua.png");
-
-    // Logo superior
-    // Obtener dimensiones originales del logo
-const imgProps =
-    doc.getImageProperties(logo);
-
-// Ancho deseado del logo
-const logoWidth = 90;
-
-// Calcular altura manteniendo proporción
-const logoHeight =
-    (imgProps.height * logoWidth) /
-    imgProps.width;
-
-// Centrar logo
-const xLogo =
-    (doc.internal.pageSize.getWidth() - logoWidth) / 2;
-
-// Insertar logo
-//doc.addImage(
-    logo,
-  //  "PNG",
-  //  xLogo,
- //   6,
-   // logoWidth,
-  //  logoHeight
-//);
+    // Cargar únicamente marca de agua
+    const marcaAgua = await cargarImagenBase64(
+        "iconos/marca_de_agua.png"
+    );
 
     // Título
     doc.setFont("helvetica", "bold");
     doc.setFontSize(23);
+
     doc.text(
         "RECUPERACIÓN DE ESTRUCTURAS DE METAL",
         doc.internal.pageSize.getWidth() / 2,
-        35,
+        25,
         { align: "center" }
     );
 
@@ -930,16 +903,16 @@ const xLogo =
     doc.setFont("helvetica", "normal");
     doc.setFontSize(42);
 
-    doc.text(`Folio: ${ultimoFolio}`, 15, 50);
+    doc.text(`Folio: ${ultimoFolio}`, 15, 45);
     doc.text(`Fecha: ${ultimaFecha}`, 15, 62);
-    doc.text(`CEDI: ${ultimoCedi}`, 15, 74);
+    doc.text(`CEDI: ${ultimoCedi}`, 15, 79);
 
     // Marca de agua
     doc.addImage(
         marcaAgua,
         "PNG",
         45,
-        90,
+        95,
         120,
         120
     );
@@ -953,7 +926,7 @@ const xLogo =
     ]);
 
     doc.autoTable({
-        startY: 90,
+        startY: 95,
         head: [["#", "Estado", "Tipo de Estructura", "Serie"]],
         body: filas,
 
@@ -980,6 +953,7 @@ const xLogo =
         }
     });
 
+    // Total
     doc.setFont("helvetica", "bold");
     doc.setFontSize(10);
 
