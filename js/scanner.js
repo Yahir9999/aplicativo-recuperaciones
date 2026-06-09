@@ -3,7 +3,7 @@ let html5QrCode = null;
 let scannerPausado = false;
 let modoScanner = "BUEN_ESTADO";
 
-function iniciarScanner(modo = "BUEN_ESTADO") {
+async function iniciarScanner(modo = "BUEN_ESTADO") {
 
     modoScanner = modo;
 
@@ -12,55 +12,70 @@ function iniciarScanner(modo = "BUEN_ESTADO") {
 
     scannerContainer.classList.remove("oculto");
 
-    if (scannerActivo) return;
+    if (scannerActivo) {
+        return;
+    }
 
     html5QrCode =
         new Html5Qrcode("reader");
 
-    html5QrCode.start(
-        { facingMode: "environment" },
-        {
-            fps: 10,
-            qrbox: {
-                width: 250,
-                height: 120
-            }
-        },
-        (decodedText) => {
+    try {
 
-            if (scannerPausado) return;
+        await html5QrCode.start(
+            { facingMode: "environment" },
+            {
+                fps: 10,
+                qrbox: {
+                    width: 250,
+                    height: 120
+                }
+            },
+            (decodedText) => {
 
-            scannerPausado = true;
+                if (scannerPausado) return;
 
-            if (modoScanner === "BUEN_ESTADO") {
+                scannerPausado = true;
 
-                document
-                    .getElementById("serieBuenEstado")
-                    .value = decodedText;
+                if (modoScanner === "BUEN_ESTADO") {
 
-                agregarSerieBuenEstado();
+                    document
+                        .getElementById("serieBuenEstado")
+                        .value = decodedText;
 
-            } else {
+                    agregarSerieBuenEstado();
 
-                document
-                    .getElementById("serieDanada")
-                    .value = decodedText;
+                } else {
 
-                document
-                    .getElementById("btnAgregar")
-                    .click();
+                    document
+                        .getElementById("serieDanada")
+                        .value = decodedText;
 
-            }
+                    document
+                        .getElementById("btnAgregar")
+                        .click();
 
-            setTimeout(() => {
-                scannerPausado = false;
-            }, 2000);
+                }
 
-        },
-        () => {}
-    );
+                setTimeout(() => {
+                    scannerPausado = false;
+                }, 2000);
 
-    scannerActivo = true;
+            },
+            () => {}
+        );
+
+        scannerActivo = true;
+
+    } catch (error) {
+
+        console.error(error);
+
+        mostrarMensajeScanner(
+            "No se pudo iniciar la cámara"
+        );
+
+    }
+
 }
 
 function detenerScanner() {
