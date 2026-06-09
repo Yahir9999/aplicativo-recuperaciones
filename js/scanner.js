@@ -7,10 +7,10 @@ function iniciarScanner(modo = "BUEN_ESTADO") {
 
     modoScanner = modo;
 
-    const reader =
-        document.getElementById("reader");
+    const scannerContainer =
+    document.getElementById("scannerContainer");
 
-    reader.classList.remove("oculto");
+scannerContainer.classList.remove("oculto");
 
     if (scannerActivo) return;
 
@@ -70,8 +70,8 @@ function detenerScanner() {
     html5QrCode.stop().then(() => {
 
         document
-            .getElementById("reader")
-            .classList.add("oculto");
+    .getElementById("scannerContainer")
+    .classList.add("oculto");
 
         scannerActivo = false;
         scannerPausado = false;
