@@ -1,4 +1,5 @@
-<script src="js/app.js?v=10"></script>
+
+const CACHE_NAME = "recuperaciones-v12";
 
 const FILES_TO_CACHE = [
   "/",
