@@ -5,8 +5,8 @@ const FILES_TO_CACHE = [
   "/index.html",
   "/manifest.json",
   "/css/styles.css",
-  "/js/app.js?v=7",
-  "/js/scanner.js?v=2",
+  "/js/app.js",
+  "/js/scanner.js",
   "/iconos/logo.png"
 ];
 

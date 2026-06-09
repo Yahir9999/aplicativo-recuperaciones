@@ -352,3 +352,15 @@ select option {
     font-weight: 600;
     text-align: center;
 }
+
+.captura-manual{
+    text-align: center;
+    margin-top: 12px;
+    margin-bottom: 10px;
+}
+
+.captura-manual span{
+    color: #6b7280;
+    font-size: .9rem;
+    font-style: italic;
+}
