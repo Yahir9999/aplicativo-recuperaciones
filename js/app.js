@@ -944,7 +944,7 @@ async function generarPDF() {
     doc.setFontSize(23);
 
     doc.text(
-        "RECUPERACIÓN DE ESTRUCTURAS DE METAL",
+        "LISTADO DE ESTRUCTURAS DE METAL",
         doc.internal.pageSize.getWidth() / 2,
         25,
         { align: "center" }
