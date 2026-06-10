@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recuperaciones</title>
 
-    <link rel="stylesheet" href="css/styles.css?v=12">
+    <link rel="stylesheet" href="css/styles.css?v=13">
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#000000">
@@ -137,6 +137,16 @@
             class="card oculto">
 
             <h2>Material Dañado</h2>
+
+            <div class="campo">
+                <label>Tipo de Estructura</label>
+
+                <select id="estructuraDanada">
+                    <option value="">
+                        Seleccionar
+                    </option>
+                </select>
+            </div>
 
             <div class="campo">
                 <label>Estado</label>
@@ -274,8 +284,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 
-    <script src="js/scanner.js?v=12"></script>
-    <script src="js/app.js?v=12"></script>
+    <script src="js/scanner.js?v=13"></script>
+    <script src="js/app.js?v=13"></script>
 
     <script>
     if ("serviceWorker" in navigator) {
