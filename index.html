@@ -293,5 +293,63 @@
     }
 </script>
 
+//bloquear que puedan acceder al codigo de la pagina
+<script>
+
+// Bloquear clic derecho
+document.addEventListener("contextmenu", e => {
+    e.preventDefault();
+});
+
+// Bloquear teclas
+document.addEventListener("keydown", e => {
+
+    if (
+        e.key === "F12" ||
+
+        (e.ctrlKey &&
+         e.shiftKey &&
+         ["I","J","C"].includes(e.key.toUpperCase())) ||
+
+        (e.ctrlKey &&
+         e.key.toUpperCase() === "U")
+    ) {
+
+        e.preventDefault();
+        return false;
+
+    }
+
+});
+
+</script>
+
+<script>
+
+setInterval(() => {
+
+    if (
+        window.outerWidth - window.innerWidth > 160 ||
+        window.outerHeight - window.innerHeight > 160
+    ) {
+
+        document.body.innerHTML = `
+        <div style="
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            height:100vh;
+            font-size:30px;
+            font-family:sans-serif;
+        ">
+            Acceso no permitido
+        </div>`;
+
+    }
+
+}, 1000);
+
+</script>
+
 </body>
 </html>
