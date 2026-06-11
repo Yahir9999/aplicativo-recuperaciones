@@ -36,11 +36,13 @@ async function iniciarScanner(modo = "BUEN_ESTADO") {
 
                 scannerPausado = true;
 
+                const serie = decodedText.trim();
+
                 if (modoScanner === "BUEN_ESTADO") {
 
                     document
                         .getElementById("serieBuenEstado")
-                        .value = decodedText;
+                        .value = serie;
 
                     agregarSerieBuenEstado();
 
@@ -48,7 +50,7 @@ async function iniciarScanner(modo = "BUEN_ESTADO") {
 
                     document
                         .getElementById("serieDanada")
-                        .value = decodedText;
+                        .value = serie;
 
                     document
                         .getElementById("btnAgregar")
@@ -56,9 +58,7 @@ async function iniciarScanner(modo = "BUEN_ESTADO") {
 
                 }
 
-                setTimeout(() => {
-                    scannerPausado = false;
-                }, 2000);
+                detenerScanner();
 
             },
             () => {}

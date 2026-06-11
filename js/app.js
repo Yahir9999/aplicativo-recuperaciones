@@ -634,7 +634,9 @@ function agregarSerieBuenEstado() {
     const serie =
         document.getElementById(
             "serieBuenEstado"
-        ).value.trim();
+        ).value
+        .trim()
+        .toUpperCase();
 
     if (!estructura) {
 
@@ -656,43 +658,48 @@ function agregarSerieBuenEstado() {
 
     if (lote.length >= limiteEstructura) {
 
-    detenerScanner();
+        detenerScanner();
 
-    mostrarMensajeScanner(
-        `Límite alcanzado: ${limiteEstructura} series para ${estructura}`
-    );
+        mostrarMensajeScanner(
+            `Límite alcanzado: ${limiteEstructura} series para ${estructura}`
+        );
 
-    return;
+        return;
 
-}
+    }
 
     // validar duplicados
 
     const existe = lote.some(
-        item => item.serie === serie
+        item =>
+            item.serie
+                .trim()
+                .toUpperCase() === serie
     );
 
     if (existe) {
 
-    mostrarMensajeScanner(
-        "La serie ya fue capturada"
-    );
+        detenerScanner();
 
-    document
-        .getElementById(
-            "serieBuenEstado"
-        )
-        .value = "";
+        mostrarMensajeScanner(
+            "La serie ya fue capturada"
+        );
 
-    document
-        .getElementById(
-            "serieBuenEstado"
-        )
-        .focus();
+        document
+            .getElementById(
+                "serieBuenEstado"
+            )
+            .value = "";
 
-    return;
+        document
+            .getElementById(
+                "serieBuenEstado"
+            )
+            .focus();
 
-}
+        return;
+
+    }
 
     const datosEstructura =
         catalogos.estructuras.find(
@@ -719,6 +726,9 @@ function agregarSerieBuenEstado() {
 
     });
 
+    // apagar cámara después de una lectura correcta
+    detenerScanner();
+
     // bloquear estructura después de la primera captura
 
     document.getElementById(
@@ -726,6 +736,7 @@ function agregarSerieBuenEstado() {
     ).disabled = true;
 
     actualizarContador();
+
     renderizarTabla();
 
     document
