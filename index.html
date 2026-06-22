@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recuperaciones</title>
 
-    <link rel="stylesheet" href="css/styles.css?v=18">
+    <link rel="stylesheet" href="css/styles.css?v=20">
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#000000">
@@ -292,8 +292,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 
-    <script src="js/scanner.js?v=18"></script>
-    <script src="js/app.js?v=18"></script>
+    <script src="js/scanner.js?v=20"></script>
+    <script src="js/app.js?v=20"></script>
 
     <script>
     if ("serviceWorker" in navigator) {
@@ -332,32 +332,9 @@ document.addEventListener("keydown", e => {
 
 </script>
 
-<script>
 
-setInterval(() => {
 
-    if (
-        window.outerWidth - window.innerWidth > 160 ||
-        window.outerHeight - window.innerHeight > 160
-    ) {
 
-        document.body.innerHTML = `
-        <div style="
-            display:flex;
-            justify-content:center;
-            align-items:center;
-            height:100vh;
-            font-size:30px;
-            font-family:sans-serif;
-        ">
-            Acceso no permitido
-        </div>`;
-
-    }
-
-}, 1000);
-
-</script>
 
 </body>
 </html>
