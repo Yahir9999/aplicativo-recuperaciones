@@ -368,31 +368,25 @@ btnAgregar.addEventListener("click", () => {
             item => item[0] === estructura
         );
 
-    const existe = lote.some(
-        item => item.serie === serie
+    serie = serie.trim().toUpperCase();
+
+const existe = lote.some(
+    item =>
+        item.serie
+            .trim()
+            .toUpperCase() === serie
+);
+
+if (
+    serie !== "N/A" &&
+    existe
+) {
+
+    mostrarMensajeScanner(
+        "⚠ Serie duplicada, favor de verificar la bitácora"
     );
 
-    if (
-        serie !== "N/A" &&
-        existe
-    ) {
-
-        mostrarMensajeScanner(
-            "La serie ya fue capturada"
-        );
-
-        document.getElementById(
-            "serieDanada"
-        ).value = "";
-
-        document.getElementById(
-            "serieDanada"
-        ).focus();
-
-        return;
-
-    }
-
+}
     lote.push({
 
         estado,
@@ -672,35 +666,19 @@ function agregarSerieBuenEstado() {
     // validar duplicados
 
     const existe = lote.some(
-        item =>
-            item.serie
-                .trim()
-                .toUpperCase() === serie
+    item =>
+        item.serie
+            .trim()
+            .toUpperCase() === serie
+);
+
+if (existe) {
+
+    mostrarMensajeScanner(
+        "⚠ Serie duplicada, favor de verificar la bitácora"
     );
 
-    if (existe) {
-
-        detenerScanner();
-
-        mostrarMensajeScanner(
-            "La serie ya fue capturada"
-        );
-
-        document
-            .getElementById(
-                "serieBuenEstado"
-            )
-            .value = "";
-
-        document
-            .getElementById(
-                "serieBuenEstado"
-            )
-            .focus();
-
-        return;
-
-    }
+}
 
     const datosEstructura =
         catalogos.estructuras.find(
@@ -860,9 +838,15 @@ ultimoAuxiliar = auxiliar;
 
 ultimaFecha = fecha;
 
-alert(
-    `Registro guardado correctamente\nFolio: ${resultado.item}`
-);
+let mensaje = `Registro guardado correctamente\nFolio: ${resultado.item}`;
+
+if (resultado.duplicadas && resultado.duplicadas.length > 0) {
+    mensaje +=
+        "\n\n⚠ Serie duplicada, favor de verificar la bitácora:\n" +
+        resultado.duplicadas.join(", ");
+}
+
+alert(mensaje);
 
 btnRegistrar.disabled = false;
 
