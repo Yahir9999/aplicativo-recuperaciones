@@ -527,6 +527,7 @@ let ultimoFolio = "";
 let ultimaFecha = "";
 let ultimoCedi = "";
 let ultimoAuxiliar = "";
+let ultimoEsRegistroGrupal = false;
 const LIMITE = 16;
 
 const LIMITES_BUEN_ESTADO = {
@@ -1209,6 +1210,8 @@ ultimoAuxiliar = auxiliar;
 
 ultimaFecha = fecha;
 
+ultimoEsRegistroGrupal = esRegistroGrupal;
+
 let mensaje = `Registro guardado correctamente\nFolio: ${resultado.item}`;
 
 if (resultado.duplicadas && resultado.duplicadas.length > 0) {
@@ -1336,7 +1339,7 @@ async function generarPDF() {
 
     let registrosPDF = ultimoLoteRegistrado;
 
-    if (esRegistroGrupal) {
+    if (ultimoEsRegistroGrupal) {
 
         const response = await fetch(
             `${URL_API}?action=registrosFolio&cedi=${encodeURIComponent(ultimoCedi)}&item=${encodeURIComponent(ultimoFolio)}`
