@@ -1334,15 +1334,32 @@ function limpiarFormulario() {
 
 async function generarPDF() {
 
+    let registrosPDF = ultimoLoteRegistrado;
+
+    if (esRegistroGrupal) {
+
+        const response = await fetch(
+            `${URL_API}?action=registrosFolio&cedi=${encodeURIComponent(ultimoCedi)}&item=${encodeURIComponent(ultimoFolio)}`
+        );
+
+        const resultado = await response.json();
+
+        if (!resultado.success) {
+            alert(resultado.mensaje);
+            return;
+        }
+
+        registrosPDF = resultado.registros;
+
+    }
+
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
 
-    // Cargar únicamente marca de agua
     const marcaAgua = await cargarImagenBase64(
         "iconos/marca_de_agua.png"
     );
 
-    // Título
     doc.setFont("helvetica", "bold");
     doc.setFontSize(23);
 
@@ -1353,7 +1370,6 @@ async function generarPDF() {
         { align: "center" }
     );
 
-    // Datos generales
     doc.setFont("helvetica", "normal");
     doc.setFontSize(42);
 
@@ -1361,7 +1377,6 @@ async function generarPDF() {
     doc.text(`Fecha: ${ultimaFecha}`, 15, 62);
     doc.text(`CEDI: ${ultimoCedi}`, 15, 79);
 
-    // Marca de agua
     doc.addImage(
         marcaAgua,
         "PNG",
@@ -1371,8 +1386,7 @@ async function generarPDF() {
         120
     );
 
-    // Tabla
-    const filas = ultimoLoteRegistrado.map((pieza, index) => [
+    const filas = registrosPDF.map((pieza, index) => [
         index + 1,
         pieza.estado,
         pieza.estructura,
@@ -1407,12 +1421,11 @@ async function generarPDF() {
         }
     });
 
-    // Total
     doc.setFont("helvetica", "bold");
     doc.setFontSize(10);
 
     doc.text(
-        `Total de piezas: ${ultimoLoteRegistrado.length}`,
+        `Total de piezas: ${registrosPDF.length}`,
         15,
         doc.lastAutoTable.finalY + 12
     );
