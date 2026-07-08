@@ -148,10 +148,333 @@ function cargarAuxiliares() {
 
 }
 
+function ocultarTodasLasSecciones() {
+
+    const secciones = [
+
+        "seccionModoCamarones",
+        "seccionAuxiliar",
+        "seccionFolioGrupal",
+        "seccionTipoCaptura",
+        "seccionBuenEstado",
+        "seccionDanada",
+        "scannerContainer",
+        "seccionContador",
+        "seccionTabla",
+        "seccionAcciones"
+
+    ];
+
+    secciones.forEach(id => {
+
+        document
+            .getElementById(id)
+            .classList.add("oculto");
+
+    });
+
+}
+
+function mostrarSecciones(...ids) {
+
+    ids.forEach(id => {
+
+        document
+            .getElementById(id)
+            .classList.remove("oculto");
+
+    });
+
+}
+
+//funcion UNICAMENTE PARA CAMARONES
+function verificarModoCamarones() {
+
+    const cedi =
+        document.getElementById("cedi").value;
+
+    const esCamarones =
+        cedi === "CAMARONES";
+
+    ocultarTodasLasSecciones();
+
+    if (esCamarones) {
+
+        mostrarSecciones(
+            "seccionModoCamarones"
+        );
+
+    } else {
+
+        mostrarSecciones(
+            "seccionAuxiliar",
+            "seccionTipoCaptura",
+            "seccionContador",
+            "seccionTabla",
+            "seccionAcciones"
+        );
+
+        modoRegistro = "";
+        modoFolio = "";
+        folioGrupal = "";
+        esRegistroGrupal = false;
+
+    }
+
+}
+
+
+function seleccionarRegistroAuxiliar() {
+
+    modoRegistro = "AUXILIAR";
+    esRegistroGrupal = false;
+
+    ocultarTodasLasSecciones();
+
+    mostrarSecciones(
+        "seccionAuxiliar",
+        "seccionTipoCaptura",
+        "seccionContador",
+        "seccionTabla",
+        "seccionAcciones"
+    );
+
+}
+
+
+function seleccionarRegistroGrupal() {
+
+    modoRegistro = "GRUPAL";
+    esRegistroGrupal = true;
+    tipoCaptura = "BUEN ESTADO";
+
+    opcionesCaptura.forEach(o =>
+        o.classList.remove("activa")
+    );
+
+    document
+        .querySelector('[data-tipo="BUEN ESTADO"]')
+        .classList.add("activa");
+
+    ocultarTodasLasSecciones();
+
+    mostrarSecciones(
+        "seccionAuxiliar",
+        "seccionFolioGrupal"
+    );
+
+    document
+        .getElementById("btnPDF")
+        .disabled = true;
+
+    actualizarContador();
+
+}
+
+
+
+function seleccionarNuevoFolio() {
+
+    modoFolio = "NUEVO";
+    folioGrupal = "";
+
+    document
+        .getElementById("campoFoliosAbiertos")
+        .classList.add("oculto");
+
+    document
+        .getElementById("folioGrupalActual")
+        .classList.add("oculto");
+
+    mostrarSecciones(
+        "seccionBuenEstado"
+    );
+
+    alert("Selecciona el tipo de estructura para generar el folio.");
+
+}
+
+async function generarNuevoFolioGrupal() {
+
+    const fecha =
+        document.getElementById("fecha").value;
+
+    const cedi =
+        document.getElementById("cedi").value;
+
+    const estructura =
+        document.getElementById("estructuraBuenEstado").value;
+
+    if (!fecha) {
+        alert("Selecciona una fecha");
+        return;
+    }
+
+    if (!cedi) {
+        alert("Selecciona un CEDI");
+        return;
+    }
+
+    if (!estructura) {
+        alert("Selecciona una estructura");
+        return;
+    }
+
+    try {
+
+        const response =
+            await fetch(
+                `${URL_API}?action=nuevoFolio&cedi=${encodeURIComponent(cedi)}&estructura=${encodeURIComponent(estructura)}&fecha=${encodeURIComponent(fecha)}`
+            );
+
+        const resultado =
+            await response.json();
+
+        if (!resultado.success) {
+            alert(resultado.mensaje);
+            return;
+        }
+
+        folioGrupal =
+            resultado.item;
+
+        const divFolio =
+            document.getElementById("folioGrupalActual");
+
+        divFolio.textContent =
+            `Folio generado: ${folioGrupal}`;
+
+        divFolio.classList.remove("oculto");
+
+        document
+            .getElementById("estructuraBuenEstado")
+            .disabled = true;
+
+        mostrarSecciones(
+            "seccionContador",
+            "seccionTabla",
+            "seccionAcciones"
+        );
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert("Error al generar folio grupal");
+
+    }
+
+}
+
+function seleccionarFolioExistente() {
+
+    modoFolio = "EXISTENTE";
+    folioGrupal = "";
+
+    document
+        .getElementById("campoFoliosAbiertos")
+        .classList.remove("oculto");
+
+    document
+        .getElementById("seccionBuenEstado")
+        .classList.add("oculto");
+
+    document
+        .getElementById("folioGrupalActual")
+        .classList.add("oculto");
+
+    cargarFoliosAbiertos();
+
+}
+
+async function cargarFoliosAbiertos() {
+
+    const select =
+        document.getElementById("folioGrupalExistente");
+
+    select.innerHTML =
+        '<option value="">Cargando...</option>';
+
+    try {
+
+        const cedi =
+            document.getElementById("cedi").value;
+
+        const response =
+            await fetch(
+                `${URL_API}?action=foliosAbiertos&cedi=${encodeURIComponent(cedi)}`
+            );
+
+        const resultado =
+            await response.json();
+
+        select.innerHTML =
+            '<option value="">Seleccionar folio</option>';
+
+        if (
+            !resultado.success ||
+            resultado.folios.length === 0
+        ) {
+
+            select.innerHTML =
+                '<option value="">No hay folios abiertos</option>';
+
+            return;
+
+        }
+
+        resultado.folios.forEach(folio => {
+
+            const option =
+                document.createElement("option");
+
+            option.value =
+                folio.item;
+
+            option.textContent =
+                `${folio.item} (${folio.capturadas}/${folio.limite})`;
+
+            select.appendChild(option);
+
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        select.innerHTML =
+            '<option value="">Error al cargar</option>';
+
+    }
+
+}
+
+function seleccionarFolioGrupal() {
+
+    folioGrupal =
+        document.getElementById("folioGrupalExistente").value;
+
+    if (!folioGrupal) return;
+
+    mostrarSecciones(
+        "seccionBuenEstado",
+        "seccionContador",
+        "seccionTabla",
+        "seccionAcciones"
+    );
+
+}
+
+
+
 const opcionesCaptura =
-    document.querySelectorAll('.opcion-captura');
+    document.querySelectorAll('[data-tipo]');
 
 let tipoCaptura = '';
+let modoRegistro = "";        // AUXILIAR | GRUPAL
+let modoFolio = "";           // NUEVO | EXISTENTE
+let folioGrupal = "";
+let esRegistroGrupal = false;
 
 opcionesCaptura.forEach(opcion => {
 
@@ -262,17 +585,22 @@ function actualizarContador() {
             "btnRegistrar"
         );
 
-    if (tipoCaptura === "BUEN ESTADO") {
+    if (esRegistroGrupal) {
 
-        btnRegistrar.disabled =
-            cantidad !== limiteActual;
+    btnRegistrar.disabled =
+        cantidad === 0;
 
-    } else {
+} else if (tipoCaptura === "BUEN ESTADO") {
 
-        btnRegistrar.disabled =
-            cantidad === 0;
+    btnRegistrar.disabled =
+        cantidad !== limiteActual;
 
-    }
+} else {
+
+    btnRegistrar.disabled =
+        cantidad === 0;
+
+}
 
 }
 
@@ -495,12 +823,37 @@ document.addEventListener(
 
     cargarCatalogos();
 
+    //cedi
     document
-      .getElementById("cedi")
-      .addEventListener(
-        "change",
-        cargarAuxiliares
-      );
+    .getElementById("cedi")
+    .addEventListener("change", () => {
+
+        cargarAuxiliares();
+        verificarModoCamarones();
+
+    });
+
+    document
+    .getElementById("btnNuevoFolioGrupal")
+    .addEventListener(
+        "click",
+        seleccionarNuevoFolio
+    );
+
+document
+    .getElementById("btnFolioExistenteGrupal")
+    .addEventListener(
+        "click",
+        seleccionarFolioExistente
+    );
+
+    document
+    .getElementById("btnRegistroAuxiliar")
+    .addEventListener("click", seleccionarRegistroAuxiliar);
+
+    document
+    .getElementById("btnRegistroGrupal")
+    .addEventListener("click", seleccionarRegistroGrupal);
 
     // Escáner para Buen Estado
     document
@@ -519,19 +872,29 @@ document.addEventListener(
       );
 
     document
-      .getElementById("estructuraBuenEstado")
-      .addEventListener(
-        "change",
-        (e) => {
+  .getElementById("estructuraBuenEstado")
+  .addEventListener(
+    "change",
+    async (e) => {
 
-          actualizarComponentes(
-            e.target.value
-          );
-
-          actualizarContador();
-
-        }
+      actualizarComponentes(
+        e.target.value
       );
+
+      actualizarContador();
+
+      if (
+        esRegistroGrupal &&
+        modoFolio === "NUEVO" &&
+        e.target.value
+      ) {
+
+        await generarNuevoFolioGrupal();
+
+      }
+
+    }
+  );
 
     // Captura manual Buen Estado con Enter
     document
@@ -550,6 +913,13 @@ document.addEventListener(
 
         }
       );
+
+      document
+    .getElementById("folioGrupalExistente")
+    .addEventListener(
+        "change",
+        seleccionarFolioGrupal
+    );
 
     // Captura manual Dañada con Enter
     document
@@ -786,14 +1156,15 @@ btnRegistrar.textContent =
 
 
     const datos = {
-
-        fecha,
-        cedi,
-        auxiliar,
-        tipoCaptura,
-        registros: lote
-
-    };
+    fecha,
+    cedi,
+    auxiliar,
+    tipoCaptura,
+    modoRegistro,
+    modoFolio,
+    folioGrupal,
+    registros: lote
+};
 
     try {
 
@@ -855,9 +1226,21 @@ btnRegistrar.textContent =
 
 // habilitar botón PDF
 
-document.getElementById(
-    "btnPDF"
-).disabled = false;
+if (!esRegistroGrupal) {
+
+    document
+        .getElementById("btnPDF")
+        .disabled = false;
+
+}
+else {
+
+    document
+        .getElementById("btnPDF")
+        .disabled =
+        !resultado.loteCompleto;
+
+}
 
 limpiarFormulario();
 
@@ -922,6 +1305,30 @@ function limpiarFormulario() {
     document.getElementById(
         "contadorActual"
     ).textContent = 0;
+
+        modoRegistro = "";
+    modoFolio = "";
+    folioGrupal = "";
+    esRegistroGrupal = false;
+
+    document
+    .getElementById("seccionBuenEstado")
+    .classList.add("oculto");
+
+    document
+        .getElementById("folioGrupalActual")
+        .classList.add("oculto");
+
+    document
+        .getElementById("campoFoliosAbiertos")
+        .classList.add("oculto");
+
+    document
+        .getElementById("folioGrupalExistente")
+        .innerHTML =
+        '<option value="">Seleccionar folio</option>';
+
+    
 
 }
 

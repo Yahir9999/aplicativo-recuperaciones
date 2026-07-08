@@ -26,7 +26,7 @@
 
         <!-- DATOS GENERALES -->
 
-        <section class="card">
+        <section id="seccionDatosGenerales" class="card">
 
             <div class="campo">
                 <label>Fecha</label>
@@ -40,18 +40,87 @@
                 </select>
             </div>
 
-            <div class="campo">
-                <label>Auxiliar</label>
-                <select id="auxiliar">
-                    <option value="">Seleccionar</option>
+        </section>
+
+        
+
+        <!-- MODO CAMARONES -->
+
+            <section id="seccionModoCamarones" class="card oculto">
+
+                <h2>Tipo de Registro</h2>
+
+                <div class="tipo-captura">
+
+                    <div id="btnRegistroAuxiliar" class="opcion-captura">
+                        <span>👤</span>
+                        <p>Registro por auxiliar</p>
+                    </div>
+
+                    <div id="btnRegistroGrupal" class="opcion-captura">
+                        <span>👥</span>
+                        <p>Registro grupal</p>
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- AUXILIAR -->
+
+            <section
+                id="seccionAuxiliar"
+                class="card oculto">
+
+                <h2>Auxiliar</h2>
+
+                <div class="campo">
+
+                    <label>Auxiliar</label>
+
+                    <select id="auxiliar">
+                        <option value="">Seleccionar</option>
+                    </select>
+
+                </div>
+
+            </section>
+
+        <!-- OPCIONES REGISTRO GRUPAL -->
+
+        <section id="seccionFolioGrupal" class="card oculto">
+
+            <h2>Folio Grupal</h2>
+
+            <div class="tipo-captura">
+
+                <div id="btnNuevoFolioGrupal" class="opcion-captura">
+                    <span>➕</span>
+                    <p>Generar nuevo folio</p>
+                </div>
+
+                <div id="btnFolioExistenteGrupal" class="opcion-captura">
+                    <span>📄</span>
+                    <p>Folio ya existe</p>
+                </div>
+
+            </div>
+
+            <div id="campoFoliosAbiertos" class="campo oculto">
+                <label>Folios abiertos</label>
+
+                <select id="folioGrupalExistente">
+                    <option value="">Seleccionar folio</option>
                 </select>
             </div>
 
+            <div id="folioGrupalActual" class="folio-grupal oculto"></div>
+
         </section>
 
-        <!-- TIPO DE CAPTURA -->
+             <!-- TIPO DE CAPTURA -->
 
-        <section class="card">
+        <section id="seccionTipoCaptura" class="card">
 
             <h2>Tipo de Captura</h2>
 
@@ -216,7 +285,7 @@
 
         <!-- CONTADOR -->
 
-        <section class="card">
+        <section id="seccionContador" class="card">
 
             <h2>Piezas Capturadas</h2>
 
@@ -235,7 +304,7 @@
 
         <!-- TABLA -->
 
-        <section class="card">
+        <section id="seccionTabla" class="card">
 
             <h2>Registros Capturados</h2>
 
@@ -265,7 +334,7 @@
 
         <!-- ACCIONES -->
 
-        <section class="acciones">
+        <section id="seccionAcciones" class="acciones">
 
             <button
                 id="btnRegistrar"
@@ -292,8 +361,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 
-    <script src="js/scanner.js?v=20"></script>
-    <script src="js/app.js?v=20"></script>
+    <script src="js/scanner.js?v=21"></script>
+    <script src="js/app.js?v=21"></script>
 
     <script>
     if ("serviceWorker" in navigator) {
