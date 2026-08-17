@@ -1472,3 +1472,1949 @@ function mostrarMensajeScanner(texto) {
     }, 2500);
 
 }
+
+
+/* =====================================================
+   ENVÍO DE ESTRUCTURAS
+===================================================== */
+
+
+/* =========================
+   VARIABLES
+========================= */
+
+let foliosEnvio = [];
+
+let scannerEnvio = null;
+let scannerEnvioActivo = false;
+
+
+/*
+    Cantidad de estructuras por folio
+*/
+const ESTRUCTURAS_POR_FOLIO = {
+
+    G2N: 8,
+    G2I: 8,
+    G4Y: 7,
+    G4B: 7,
+    ATV: 6
+
+};
+
+
+/* =====================================================
+   MENÚ ⋮
+===================================================== */
+
+const btnMenu =
+    document.getElementById("btnMenu");
+
+const menuOpciones =
+    document.getElementById("menuOpciones");
+
+const btnEnvioEstructuras =
+    document.getElementById("btnEnvioEstructuras");
+
+
+if (btnMenu) {
+
+    btnMenu.addEventListener("click", (e) => {
+
+        e.stopPropagation();
+
+        menuOpciones.classList.toggle("oculto");
+
+    });
+
+}
+
+
+/*
+    Cerrar menú al hacer clic fuera
+*/
+
+document.addEventListener("click", (e) => {
+
+    if (
+        menuOpciones &&
+        btnMenu &&
+        !menuOpciones.contains(e.target) &&
+        !btnMenu.contains(e.target)
+    ) {
+
+        menuOpciones.classList.add("oculto");
+
+    }
+
+});
+
+
+/* =====================================================
+   ENTRAR A ENVÍO
+===================================================== */
+
+if (btnEnvioEstructuras) {
+
+    btnEnvioEstructuras.addEventListener(
+        "click",
+        abrirEnvioEstructuras
+    );
+
+}
+
+
+function abrirEnvioEstructuras() {
+
+    /*
+        Cerrar menú
+    */
+
+    menuOpciones.classList.add("oculto");
+
+
+    /*
+        Detener escáner anterior
+        por seguridad
+    */
+
+    try {
+
+        detenerScanner();
+
+    } catch (error) {
+
+        console.log(
+            "No había escáner de recuperación activo."
+        );
+
+    }
+
+
+    /*
+        Ocultar flujo de recuperaciones
+    */
+
+    ocultarTodasLasSecciones();
+
+
+    /*
+        Mostrar envío
+    */
+
+    document
+        .getElementById("seccionEnvioEstructuras")
+        .classList.remove("oculto");
+
+
+    /*
+        Cambiar título
+    */
+
+    const titulo =
+        document.querySelector(
+            ".app-header h1"
+        );
+
+    if (titulo) {
+
+        titulo.textContent =
+            "ENVÍO DE ESTRUCTURAS";
+
+    }
+
+
+    /*
+        Cargar CEDIS
+    */
+
+    cargarCedisEnvio();
+
+
+    /*
+        Colocar fecha actual
+    */
+
+    establecerFechaEnvio();
+
+
+    /*
+        Limpiar datos anteriores
+        de una sesión anterior
+    */
+
+    limpiarEnvioEstructuras();
+
+}
+
+
+/* =====================================================
+   REGRESAR A RECUPERACIONES
+===================================================== */
+
+const btnRegresarRecuperaciones =
+    document.getElementById(
+        "btnRegresarRecuperaciones"
+    );
+
+
+if (btnRegresarRecuperaciones) {
+
+    btnRegresarRecuperaciones.addEventListener(
+        "click",
+        regresarRecuperaciones
+    );
+
+}
+
+
+function regresarRecuperaciones() {
+
+    /*
+        Detener escáner
+    */
+
+    detenerScannerEnvio();
+
+
+    /*
+        Ocultar módulo de envío
+    */
+
+    document
+        .getElementById(
+            "seccionEnvioEstructuras"
+        )
+        .classList.add("oculto");
+
+
+    /*
+        Restaurar título
+    */
+
+    const titulo =
+        document.querySelector(
+            ".app-header h1"
+        );
+
+    if (titulo) {
+
+        titulo.textContent =
+            "RECUPERACIONES DE ESTRUCTURAS DE METAL";
+
+    }
+
+
+    /*
+        Volver a mostrar el flujo
+        correspondiente al CEDI actual
+    */
+
+    const cedi =
+        document.getElementById("cedi").value;
+
+
+    if (cedi) {
+
+        verificarModoCamarones();
+
+    } else {
+
+        mostrarSecciones(
+            "seccionDatosGenerales"
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   CARGAR CEDIS EN ENVÍO
+===================================================== */
+
+function cargarCedisEnvio() {
+
+    const select =
+        document.getElementById(
+            "envioCedi"
+        );
+
+
+    if (!select) return;
+
+
+    select.innerHTML =
+        '<option value="">Seleccionar</option>';
+
+
+    /*
+        Utilizamos el mismo catálogo
+        que ya carga el aplicativo
+    */
+
+    if (
+        !catalogos ||
+        !catalogos.cedis
+    ) {
+
+        return;
+
+    }
+
+
+    catalogos.cedis.forEach(
+        cedi => {
+
+            const nombre =
+                cedi[0];
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+            option.value = nombre;
+
+            option.textContent = nombre;
+
+            select.appendChild(option);
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   FECHA ACTUAL
+===================================================== */
+
+function establecerFechaEnvio() {
+
+    const input =
+        document.getElementById(
+            "fechaEnvio"
+        );
+
+
+    if (!input) return;
+
+
+    const hoy =
+        new Date();
+
+
+    const anio =
+        hoy.getFullYear();
+
+
+    const mes =
+        String(
+            hoy.getMonth() + 1
+        ).padStart(2, "0");
+
+
+    const dia =
+        String(
+            hoy.getDate()
+        ).padStart(2, "0");
+
+
+    input.value =
+        `${anio}-${mes}-${dia}`;
+
+}
+
+
+/* =====================================================
+   BOTÓN ESCANEAR FOLIO
+===================================================== */
+
+const btnEscanearFolioEnvio =
+    document.getElementById(
+        "btnEscanearFolioEnvio"
+    );
+
+
+if (btnEscanearFolioEnvio) {
+
+    btnEscanearFolioEnvio.addEventListener(
+        "click",
+        iniciarScannerEnvio
+    );
+
+}
+
+
+async function iniciarScannerEnvio() {
+
+    const container =
+        document.getElementById(
+            "scannerEnvioContainer"
+        );
+
+
+    if (!container) return;
+
+
+    /*
+        Si ya está activo,
+        no volver a iniciarlo
+    */
+
+    if (scannerEnvioActivo) {
+
+        return;
+
+    }
+
+
+    container.classList.remove(
+        "oculto"
+    );
+
+
+    try {
+
+        scannerEnvio =
+            new Html5Qrcode(
+                "readerEnvio"
+            );
+
+
+        scannerEnvioActivo = true;
+
+
+        await scannerEnvio.start(
+
+            {
+                facingMode: "environment"
+            },
+
+            {
+                fps: 10,
+
+                qrbox: {
+                    width: 250,
+                    height: 250
+                }
+
+            },
+
+            async (decodedText) => {
+
+                /*
+                    Lectura correcta
+                */
+
+                document
+                    .getElementById(
+                        "folioEnvio"
+                    )
+                    .value =
+                    decodedText.trim()
+                        .toUpperCase();
+
+
+                /*
+                    Apagar cámara
+                */
+
+                detenerScannerEnvio();
+
+
+                /*
+                    Validar automáticamente
+                    el folio
+                */
+
+                await validarYAgregarFolioEnvio();
+
+            },
+
+            (errorMessage) => {
+
+                /*
+                    No mostramos errores
+                    normales de lectura.
+                */
+
+            }
+
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Error al iniciar scanner de envío:",
+            error
+        );
+
+
+        scannerEnvioActivo = false;
+
+
+        container.classList.add(
+            "oculto"
+        );
+
+
+        mostrarMensajeFolioEnvio(
+            "No se pudo iniciar la cámara."
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   DETENER ESCÁNER
+===================================================== */
+
+function detenerScannerEnvio() {
+
+    if (
+        scannerEnvio &&
+        scannerEnvioActivo
+    ) {
+
+        scannerEnvio.stop()
+            .then(() => {
+
+                scannerEnvio.clear();
+
+                scannerEnvioActivo =
+                    false;
+
+            })
+            .catch(error => {
+
+                console.log(
+                    "Error al detener scanner:",
+                    error
+                );
+
+                scannerEnvioActivo =
+                    false;
+
+            });
+
+    }
+
+
+    const container =
+        document.getElementById(
+            "scannerEnvioContainer"
+        );
+
+
+    if (container) {
+
+        container.classList.add(
+            "oculto"
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   BOTÓN AÑADIR FOLIO
+===================================================== */
+
+const btnAgregarFolioEnvio =
+    document.getElementById(
+        "btnAgregarFolioEnvio"
+    );
+
+
+if (btnAgregarFolioEnvio) {
+
+    btnAgregarFolioEnvio.addEventListener(
+        "click",
+        validarYAgregarFolioEnvio
+    );
+
+}
+
+
+/* =====================================================
+   ENTER EN FOLIO
+===================================================== */
+
+const inputFolioEnvio =
+    document.getElementById(
+        "folioEnvio"
+    );
+
+
+if (inputFolioEnvio) {
+
+    inputFolioEnvio.addEventListener(
+        "keydown",
+        async (e) => {
+
+            if (
+                e.key === "Enter"
+            ) {
+
+                e.preventDefault();
+
+                await validarYAgregarFolioEnvio();
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   VALIDAR FOLIO
+===================================================== */
+
+async function validarYAgregarFolioEnvio() {
+
+    const folioInput =
+        document.getElementById(
+            "folioEnvio"
+        );
+
+
+    const cediInput =
+        document.getElementById(
+            "envioCedi"
+        );
+
+
+    if (!folioInput || !cediInput) {
+
+        return;
+
+    }
+
+
+    const folio =
+        folioInput.value
+            .trim()
+            .toUpperCase();
+
+
+    const cedi =
+        cediInput.value;
+
+
+    /*
+        Validar CEDI
+    */
+
+    if (!cedi) {
+
+        mostrarMensajeFolioEnvio(
+            "Selecciona un CEDI antes de agregar folios."
+        );
+
+        return;
+
+    }
+
+
+    /*
+        Validar folio
+    */
+
+    if (!folio) {
+
+        mostrarMensajeFolioEnvio(
+            "Escanea o escribe un folio."
+        );
+
+        return;
+
+    }
+
+
+    /*
+        Evitar duplicados
+    */
+
+    const yaExiste =
+        foliosEnvio.some(
+            item =>
+                item.folio === folio
+        );
+
+
+    if (yaExiste) {
+
+        mostrarMensajeFolioEnvio(
+            "⚠ Este folio ya fue agregado."
+        );
+
+        folioInput.focus();
+
+        return;
+
+    }
+
+
+    /*
+        Mostrar estado
+    */
+
+    mostrarMensajeFolioEnvio(
+        "Validando folio..."
+    );
+
+
+    try {
+
+        /*
+            Consultar Apps Script
+        */
+
+        const response =
+            await fetch(
+                `${URL_API}?action=validarFolioEnvio` +
+                `&cedi=${encodeURIComponent(cedi)}` +
+                `&item=${encodeURIComponent(folio)}`
+            );
+
+
+        const resultado =
+            await response.json();
+
+
+        /*
+            Folio inexistente
+        */
+
+        if (
+            !resultado.success
+        ) {
+
+            mostrarMensajeFolioEnvio(
+                "❌ " +
+                (
+                    resultado.mensaje ||
+                    "Folio no encontrado."
+                )
+            );
+
+            return;
+
+        }
+
+
+        /*
+            Identificar estructura
+        */
+
+        const tipo =
+            identificarTipoFolio(
+                folio,
+                resultado.estructura
+            );
+
+
+        if (!tipo) {
+
+            mostrarMensajeFolioEnvio(
+                "❌ No se pudo identificar el tipo de estructura del folio."
+            );
+
+            return;
+
+        }
+
+
+        /*
+            Cantidad correspondiente
+        */
+
+        const cantidad =
+            ESTRUCTURAS_POR_FOLIO[
+                tipo.codigo
+            ];
+
+
+        /*
+            Agregar a memoria
+        */
+
+        foliosEnvio.push({
+
+            folio: folio,
+
+            tipo: tipo.codigo,
+
+            nombre: tipo.nombre,
+
+            cantidad: cantidad
+
+        });
+
+
+        /*
+            Actualizar tabla
+        */
+
+        renderizarFoliosEnvio();
+
+
+        /*
+            Actualizar totales
+        */
+
+        actualizarResumenEnvio();
+
+
+        /*
+            Limpiar campo
+        */
+
+        folioInput.value = "";
+
+        folioInput.focus();
+
+
+        /*
+            Mensaje correcto
+        */
+
+        mostrarMensajeFolioEnvio(
+            `✅ Folio válido: ${folio}`
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Error validando folio:",
+            error
+        );
+
+
+        mostrarMensajeFolioEnvio(
+            "❌ No fue posible validar el folio. Verifica tu conexión."
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   IDENTIFICAR ESTRUCTURA DEL FOLIO
+===================================================== */
+
+function identificarTipoFolio(
+    folio,
+    estructuraAppsScript = ""
+) {
+
+    const valor =
+        String(
+            estructuraAppsScript ||
+            ""
+        )
+        .trim()
+        .toUpperCase();
+
+
+    /*
+        Primero intentamos utilizar
+        la estructura que nos devuelve
+        Apps Script.
+    */
+
+    if (
+        valor === "G2N" ||
+        valor === "G2 NACIONAL" ||
+        valor === "G2 NACIONAL"
+    ) {
+
+        return {
+
+            codigo: "G2N",
+
+            nombre: "G2 Nacional"
+
+        };
+
+    }
+
+
+    if (
+        valor === "G2I" ||
+        valor === "G2 IMPORTADA" ||
+        valor === "G2 IMPORTADA"
+    ) {
+
+        return {
+
+            codigo: "G2I",
+
+            nombre: "G2 Importada"
+
+        };
+
+    }
+
+
+    if (
+        valor === "G4Y" ||
+        valor === "G4-Y"
+    ) {
+
+        return {
+
+            codigo: "G4Y",
+
+            nombre: "G4-Y"
+
+        };
+
+    }
+
+
+    if (
+        valor === "G4B" ||
+        valor === "G4-B"
+    ) {
+
+        return {
+
+            codigo: "G4B",
+
+            nombre: "G4-B"
+
+        };
+
+    }
+
+
+    if (
+        valor === "ATV" ||
+        valor.includes("CUATRIMOTO")
+    ) {
+
+        return {
+
+            codigo: "ATV",
+
+            nombre: "ATV (Cuatrimoto)"
+
+        };
+
+    }
+
+
+    /*
+        Si Apps Script no devolvió
+        estructura, usamos el prefijo
+        del folio como respaldo.
+    */
+
+    const prefijo =
+        String(folio)
+            .trim()
+            .toUpperCase()
+            .split("-")[0];
+
+
+    if (prefijo === "G2N") {
+
+        return {
+
+            codigo: "G2N",
+
+            nombre: "G2 Nacional"
+
+        };
+
+    }
+
+
+    if (prefijo === "G2I") {
+
+        return {
+
+            codigo: "G2I",
+
+            nombre: "G2 Importada"
+
+        };
+
+    }
+
+
+    if (prefijo === "G4Y") {
+
+        return {
+
+            codigo: "G4Y",
+
+            nombre: "G4-Y"
+
+        };
+
+    }
+
+
+    if (prefijo === "G4B") {
+
+        return {
+
+            codigo: "G4B",
+
+            nombre: "G4-B"
+
+        };
+
+    }
+
+
+    if (prefijo === "ATV") {
+
+        return {
+
+            codigo: "ATV",
+
+            nombre: "ATV (Cuatrimoto)"
+
+        };
+
+    }
+
+
+    return null;
+
+}
+
+
+/* =====================================================
+   RENDERIZAR TABLA DE FOLIOS
+===================================================== */
+
+function renderizarFoliosEnvio() {
+
+    const tbody =
+        document.getElementById(
+            "tablaFoliosEnvio"
+        );
+
+
+    if (!tbody) return;
+
+
+    tbody.innerHTML = "";
+
+
+    foliosEnvio.forEach(
+        (item, index) => {
+
+            const fila =
+                document.createElement(
+                    "tr"
+                );
+
+
+            fila.innerHTML = `
+
+                <td>
+                    ${index + 1}
+                </td>
+
+                <td>
+                    ${item.folio}
+                </td>
+
+                <td>
+                    ${item.nombre}
+                </td>
+
+                <td>
+                    ${item.cantidad}
+                </td>
+
+                <td>
+
+                    <button
+                        type="button"
+                        class="btn-eliminar-folio-envio"
+                        data-index="${index}">
+
+                        🗑️
+
+                    </button>
+
+                </td>
+
+            `;
+
+
+            tbody.appendChild(
+                fila
+            );
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   ELIMINAR FOLIO DEL ENVÍO
+===================================================== */
+
+document.addEventListener(
+    "click",
+    (e) => {
+
+        const boton =
+            e.target.closest(
+                ".btn-eliminar-folio-envio"
+            );
+
+
+        if (!boton) return;
+
+
+        const index =
+            Number(
+                boton.dataset.index
+            );
+
+
+        if (
+            Number.isNaN(index)
+        ) {
+
+            return;
+
+        }
+
+
+        foliosEnvio.splice(
+            index,
+            1
+        );
+
+
+        renderizarFoliosEnvio();
+
+        actualizarResumenEnvio();
+
+    }
+);
+
+
+/* =====================================================
+   ACTUALIZAR RESUMEN
+===================================================== */
+
+function actualizarResumenEnvio() {
+
+    let g2Nacional = 0;
+
+    let g2Importada = 0;
+
+    let g4Y = 0;
+
+    let g4B = 0;
+
+    let atv = 0;
+
+
+    foliosEnvio.forEach(
+        item => {
+
+            switch (
+                item.tipo
+            ) {
+
+                case "G2N":
+
+                    g2Nacional +=
+                        item.cantidad;
+
+                    break;
+
+
+                case "G2I":
+
+                    g2Importada +=
+                        item.cantidad;
+
+                    break;
+
+
+                case "G4Y":
+
+                    g4Y +=
+                        item.cantidad;
+
+                    break;
+
+
+                case "G4B":
+
+                    g4B +=
+                        item.cantidad;
+
+                    break;
+
+
+                case "ATV":
+
+                    atv +=
+                        item.cantidad;
+
+                    break;
+
+            }
+
+        }
+    );
+
+
+    const total =
+        g2Nacional +
+        g2Importada +
+        g4Y +
+        g4B +
+        atv;
+
+
+    document.getElementById(
+        "envioG2Nacional"
+    ).textContent =
+        g2Nacional;
+
+
+    document.getElementById(
+        "envioG2Importada"
+    ).textContent =
+        g2Importada;
+
+
+    document.getElementById(
+        "envioG4Y"
+    ).textContent =
+        g4Y;
+
+
+    document.getElementById(
+        "envioG4B"
+    ).textContent =
+        g4B;
+
+
+    document.getElementById(
+        "envioATV"
+    ).textContent =
+        atv;
+
+
+    document.getElementById(
+        "envioCantidadTotal"
+    ).textContent =
+        total;
+
+
+    actualizarTotalTornilleria();
+
+}
+
+
+/* =====================================================
+   TORNILLERÍA
+===================================================== */
+
+const camposTornilleria = [
+
+    "tornilloM6",
+
+    "tornilloM8",
+
+    "tornilloM8x55"
+
+];
+
+
+camposTornilleria.forEach(
+    id => {
+
+        const campo =
+            document.getElementById(
+                id
+            );
+
+
+        if (!campo) return;
+
+
+        campo.addEventListener(
+            "input",
+            actualizarTotalTornilleria
+        );
+
+    }
+);
+
+
+function obtenerNumero(
+    id
+) {
+
+    const campo =
+        document.getElementById(
+            id
+        );
+
+
+    if (!campo) return 0;
+
+
+    const valor =
+        Number(
+            campo.value
+        );
+
+
+    return Number.isFinite(valor)
+        ? valor
+        : 0;
+
+}
+
+
+function actualizarTotalTornilleria() {
+
+    const m6 =
+        obtenerNumero(
+            "tornilloM6"
+        );
+
+
+    const m8 =
+        obtenerNumero(
+            "tornilloM8"
+        );
+
+
+    const m8x55 =
+        obtenerNumero(
+            "tornilloM8x55"
+        );
+
+
+    const total =
+        m6 +
+        m8 +
+        m8x55;
+
+
+    const elemento =
+        document.getElementById(
+            "totalTornilleria"
+        );
+
+
+    if (elemento) {
+
+        elemento.textContent =
+            total;
+
+    }
+
+
+    actualizarEstadoBotonEnvio();
+
+}
+
+
+/* =====================================================
+   EVIDENCIA
+===================================================== */
+
+const evidenciaEnvio =
+    document.getElementById(
+        "evidenciaEnvio"
+    );
+
+
+if (evidenciaEnvio) {
+
+    evidenciaEnvio.addEventListener(
+        "change",
+        mostrarPreviewEvidencia
+    );
+
+}
+
+
+function mostrarPreviewEvidencia() {
+
+    const archivo =
+        evidenciaEnvio.files[0];
+
+
+    const preview =
+        document.getElementById(
+            "previewEvidencia"
+        );
+
+
+    const imagen =
+        document.getElementById(
+            "imagenEvidencia"
+        );
+
+
+    if (
+        !archivo ||
+        !archivo.type.startsWith(
+            "image/"
+        )
+    ) {
+
+        preview.classList.add(
+            "oculto"
+        );
+
+        imagen.src = "";
+
+        actualizarEstadoBotonEnvio();
+
+        return;
+
+    }
+
+
+    const reader =
+        new FileReader();
+
+
+    reader.onload =
+        (e) => {
+
+            imagen.src =
+                e.target.result;
+
+            preview.classList.remove(
+                "oculto"
+            );
+
+        };
+
+
+    reader.readAsDataURL(
+        archivo
+    );
+
+
+    actualizarEstadoBotonEnvio();
+
+}
+
+
+/* =====================================================
+   HABILITAR / DESHABILITAR ENVIAR
+===================================================== */
+
+function actualizarEstadoBotonEnvio() {
+
+    const boton =
+        document.getElementById(
+            "btnEnviarEstructuras"
+        );
+
+
+    if (!boton) return;
+
+
+    const cedi =
+        document.getElementById(
+            "envioCedi"
+        )?.value;
+
+
+    const fecha =
+        document.getElementById(
+            "fechaEnvio"
+        )?.value;
+
+
+    const marchamo =
+        document.getElementById(
+            "numeroMarchamo"
+        )?.value.trim();
+
+
+    /*
+        Por ahora pedimos:
+
+        CEDI
+        Fecha
+        Al menos un folio
+        Marchamo
+        Evidencia
+    */
+
+    const evidencia =
+        document.getElementById(
+            "evidenciaEnvio"
+        )?.files.length > 0;
+
+
+    boton.disabled =
+        !cedi ||
+        !fecha ||
+        foliosEnvio.length === 0 ||
+        !marchamo ||
+        !evidencia;
+
+}
+
+
+/* =====================================================
+   EVENTOS DE CAMPOS DEL ENVÍO
+===================================================== */
+
+[
+    "envioCedi",
+    "fechaEnvio",
+    "numeroMarchamo"
+
+].forEach(
+    id => {
+
+        const campo =
+            document.getElementById(
+                id
+            );
+
+
+        if (!campo) return;
+
+
+        campo.addEventListener(
+            "input",
+            actualizarEstadoBotonEnvio
+        );
+
+
+        campo.addEventListener(
+            "change",
+            actualizarEstadoBotonEnvio
+        );
+
+    }
+);
+
+
+/* =====================================================
+   MENSAJE DE FOLIO
+===================================================== */
+
+function mostrarMensajeFolioEnvio(
+    texto
+) {
+
+    const mensaje =
+        document.getElementById(
+            "mensajeFolioEnvio"
+        );
+
+
+    if (!mensaje) return;
+
+
+    mensaje.textContent =
+        texto;
+
+
+    mensaje.classList.remove(
+        "oculto"
+    );
+
+
+    clearTimeout(
+        window.timeoutMensajeFolioEnvio
+    );
+
+
+    window.timeoutMensajeFolioEnvio =
+        setTimeout(
+            () => {
+
+                mensaje.classList.add(
+                    "oculto"
+                );
+
+                mensaje.textContent =
+                    "";
+
+            },
+
+            3000
+        );
+
+}
+
+
+/* =====================================================
+   LIMPIAR ENVÍO
+===================================================== */
+
+function limpiarEnvioEstructuras() {
+
+    foliosEnvio = [];
+
+
+    renderizarFoliosEnvio();
+
+    actualizarResumenEnvio();
+
+
+    const folio =
+        document.getElementById(
+            "folioEnvio"
+        );
+
+
+    if (folio) {
+
+        folio.value = "";
+
+    }
+
+
+    const marchamo =
+        document.getElementById(
+            "numeroMarchamo"
+        );
+
+
+    if (marchamo) {
+
+        marchamo.value = "";
+
+    }
+
+
+    const tornillos = [
+
+        "tornilloM6",
+
+        "tornilloM8",
+
+        "tornilloM8x55"
+
+    ];
+
+
+    tornillos.forEach(
+        id => {
+
+            const campo =
+                document.getElementById(
+                    id
+                );
+
+
+            if (campo) {
+
+                campo.value = 0;
+
+            }
+
+        }
+    );
+
+
+    if (evidenciaEnvio) {
+
+        evidenciaEnvio.value =
+            "";
+
+    }
+
+
+    const preview =
+        document.getElementById(
+            "previewEvidencia"
+        );
+
+
+    const imagen =
+        document.getElementById(
+            "imagenEvidencia"
+        );
+
+
+    if (preview) {
+
+        preview.classList.add(
+            "oculto"
+        );
+
+    }
+
+
+    if (imagen) {
+
+        imagen.src = "";
+
+    }
+
+
+    actualizarTotalTornilleria();
+
+    actualizarEstadoBotonEnvio();
+
+}
+
+
+/* =====================================================
+   BOTÓN ENVIAR
+===================================================== */
+
+const btnEnviarEstructuras =
+    document.getElementById(
+        "btnEnviarEstructuras"
+    );
+
+
+if (btnEnviarEstructuras) {
+
+    btnEnviarEstructuras.addEventListener(
+        "click",
+        enviarEstructuras
+    );
+
+}
+
+
+async function enviarEstructuras() {
+
+    const cedi =
+        document.getElementById(
+            "envioCedi"
+        ).value;
+
+
+    const fecha =
+        document.getElementById(
+            "fechaEnvio"
+        ).value;
+
+
+    const marchamo =
+        document.getElementById(
+            "numeroMarchamo"
+        ).value.trim();
+
+
+    if (!cedi) {
+
+        alert(
+            "Selecciona un CEDI."
+        );
+
+        return;
+
+    }
+
+
+    if (!fecha) {
+
+        alert(
+            "Selecciona la fecha de envío."
+        );
+
+        return;
+
+    }
+
+
+    if (
+        foliosEnvio.length === 0
+    ) {
+
+        alert(
+            "Agrega al menos un folio."
+        );
+
+        return;
+
+    }
+
+
+    if (!marchamo) {
+
+        alert(
+            "Captura el número de marchamo."
+        );
+
+        return;
+
+    }
+
+
+    if (
+        !evidenciaEnvio ||
+        evidenciaEnvio.files.length === 0
+    ) {
+
+        alert(
+            "Agrega una evidencia."
+        );
+
+        return;
+
+    }
+
+
+    const boton =
+        document.getElementById(
+            "btnEnviarEstructuras"
+        );
+
+
+    boton.disabled = true;
+
+    boton.textContent =
+        "Enviando...";
+
+
+    /*
+        ==============================================
+        POR AHORA
+        ==============================================
+
+        Aquí posteriormente agregaremos:
+
+        1. Convertir evidencia a Base64.
+        2. Enviarla a Apps Script.
+        3. Guardarla en Google Drive.
+        4. Registrar el envío en
+           "Envío de estructuras".
+
+    */
+
+
+    const datosEnvio = {
+
+        cedi,
+
+        fecha,
+
+        folios:
+            foliosEnvio,
+
+        g2Nacional:
+            Number(
+                document.getElementById(
+                    "envioG2Nacional"
+                ).textContent
+            ),
+
+        g2Importada:
+            Number(
+                document.getElementById(
+                    "envioG2Importada"
+                ).textContent
+            ),
+
+        g4Y:
+            Number(
+                document.getElementById(
+                    "envioG4Y"
+                ).textContent
+            ),
+
+        g4B:
+            Number(
+                document.getElementById(
+                    "envioG4B"
+                ).textContent
+            ),
+
+        atv:
+            Number(
+                document.getElementById(
+                    "envioATV"
+                ).textContent
+            ),
+
+        cantidadTotal:
+            Number(
+                document.getElementById(
+                    "envioCantidadTotal"
+                ).textContent
+            ),
+
+        tornilloM6:
+            obtenerNumero(
+                "tornilloM6"
+            ),
+
+        tornilloM8:
+            obtenerNumero(
+                "tornilloM8"
+            ),
+
+        tornilloM8x55:
+            obtenerNumero(
+                "tornilloM8x55"
+            ),
+
+        totalTornilleria:
+            Number(
+                document.getElementById(
+                    "totalTornilleria"
+                ).textContent
+            ),
+
+        marchamo
+
+    };
+
+
+    console.log(
+        "DATOS DEL ENVÍO:",
+        datosEnvio
+    );
+
+
+    /*
+        Esta parte temporalmente solo
+        comprueba que todo esté listo.
+    */
+
+    alert(
+        "Los datos del envío están listos.\n\n" +
+        "Folios: " +
+        foliosEnvio.length +
+        "\n" +
+        "Estructuras: " +
+        datosEnvio.cantidadTotal +
+        "\n" +
+        "Tornillería: " +
+        datosEnvio.totalTornilleria
+    );
+
+
+    boton.disabled = false;
+
+    boton.textContent =
+        "ENVIAR";
+
+}
