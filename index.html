@@ -20,9 +20,417 @@
     <main class="container">
 
        <header class="app-header">
-            <img src="iconos/logo.png" alt="Logo">
-            <h1>RECUPERACIONES DE ESTRUCTURAS DE METAL</h1>
-       </header>
+
+    <img src="iconos/logo.png" alt="Logo">
+
+    <h1>RECUPERACIONES DE ESTRUCTURAS DE METAL</h1>
+
+    <!-- MENÚ -->
+    <div class="menu-container">
+
+        <button id="btnMenu" class="btn-menu" type="button">
+            ⋮
+        </button>
+
+        <div id="menuOpciones" class="menu-opciones oculto">
+
+            <button id="btnEnvioEstructuras" type="button">
+                📦 Envío de estructuras
+            </button>
+
+        </div>
+
+    </div>
+
+</header>
+
+        <!-- =====================================================
+     ENVÍO DE ESTRUCTURAS
+===================================================== -->
+
+        <section id="seccionEnvioEstructuras" class="envio-container oculto">
+
+            <div class="envio-header">
+
+                <button
+                    id="btnRegresarRecuperaciones"
+                    class="btn-regresar"
+                    type="button">
+
+                    ← Recuperaciones
+
+                </button>
+
+                <h2>ENVÍO DE ESTRUCTURAS</h2>
+
+            </div>
+
+
+            <!-- =========================
+                DATOS DEL ENVÍO
+            ========================== -->
+
+            <section class="card">
+
+                <h2>Datos del envío</h2>
+
+                <div class="campo">
+
+                    <label for="envioCedi">
+                        CEDI
+                    </label>
+
+                    <select id="envioCedi">
+
+                        <option value="">
+                            Seleccionar
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label for="fechaEnvio">
+                        Fecha de envío
+                    </label>
+
+                    <input
+                        type="date"
+                        id="fechaEnvio">
+
+                </div>
+
+            </section>
+
+
+            <!-- =========================
+                FOLIOS
+            ========================== -->
+
+            <section class="card">
+
+                <h2>Folios enviados</h2>
+
+                <div class="campo">
+
+                    <label for="folioEnvio">
+                        Escanear folio
+                    </label>
+
+                    <input
+                        type="text"
+                        id="folioEnvio"
+                        placeholder="Escanea o escribe el folio"
+                        autocomplete="off">
+
+                </div>
+
+
+                <button
+                    id="btnEscanearFolioEnvio"
+                    class="btn-primary"
+                    type="button">
+
+                    📷 Escanear folio
+
+                </button>
+
+
+                <div
+                    id="scannerEnvioContainer"
+                    class="oculto">
+
+                    <div id="readerEnvio"></div>
+
+                </div>
+
+
+                <button
+                    id="btnAgregarFolioEnvio"
+                    class="btn-secondary"
+                    type="button">
+
+                    + Añadir
+
+                </button>
+
+
+                <p
+                    id="mensajeFolioEnvio"
+                    class="mensaje-error oculto">
+                </p>
+
+
+                <!-- TABLA DE FOLIOS -->
+
+                <div class="tabla-container tabla-folios-envio">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>#</th>
+                                <th>Folio</th>
+                                <th>Estructura</th>
+                                <th>Cantidad</th>
+                                <th></th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="tablaFoliosEnvio">
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+
+            <!-- =========================
+                RESUMEN DE ESTRUCTURAS
+            ========================== -->
+
+            <section class="card">
+
+                <h2>Resumen de estructuras</h2>
+
+
+                <div class="resumen-estructuras">
+
+
+                    <div class="resumen-item">
+
+                        <span>G2 Nacional</span>
+
+                        <strong id="envioG2Nacional">
+                            0
+                        </strong>
+
+                    </div>
+
+
+                    <div class="resumen-item">
+
+                        <span>G2 Importada</span>
+
+                        <strong id="envioG2Importada">
+                            0
+                        </strong>
+
+                    </div>
+
+
+                    <div class="resumen-item">
+
+                        <span>G4-Y</span>
+
+                        <strong id="envioG4Y">
+                            0
+                        </strong>
+
+                    </div>
+
+
+                    <div class="resumen-item">
+
+                        <span>G4-B</span>
+
+                        <strong id="envioG4B">
+                            0
+                        </strong>
+
+                    </div>
+
+
+                    <div class="resumen-item">
+
+                        <span>ATV (Cuatrimoto)</span>
+
+                        <strong id="envioATV">
+                            0
+                        </strong>
+
+                    </div>
+
+
+                    <div class="resumen-item resumen-total">
+
+                        <span>Cantidad total</span>
+
+                        <strong id="envioCantidadTotal">
+                            0
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =========================
+                TORNILLERÍA
+            ========================== -->
+
+            <section class="card">
+
+                <h2>Tornillería</h2>
+
+
+                <div class="campo">
+
+                    <label for="tornilloM6">
+                        Tornillo M6x60
+                    </label>
+
+                    <input
+                        type="number"
+                        id="tornilloM6"
+                        min="0"
+                        step="1"
+                        value="0"
+                        placeholder="Cantidad">
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label for="tornilloM8">
+                        Tornillo M8x50
+                    </label>
+
+                    <input
+                        type="number"
+                        id="tornilloM8"
+                        min="0"
+                        step="1"
+                        value="0"
+                        placeholder="Cantidad">
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label for="tornilloM8x55">
+                        Tornillo M8x55
+                    </label>
+
+                    <input
+                        type="number"
+                        id="tornilloM8x55"
+                        min="0"
+                        step="1"
+                        value="0"
+                        placeholder="Cantidad">
+
+                </div>
+
+
+                <div class="total-tornilleria">
+
+                    <span>
+                        Total de tornillería
+                    </span>
+
+                    <strong id="totalTornilleria">
+                        0
+                    </strong>
+
+                </div>
+
+            </section>
+
+
+            <!-- =========================
+                MARCHAMO
+            ========================== -->
+
+            <section class="card">
+
+                <h2>Información de salida</h2>
+
+                <div class="campo">
+
+                    <label for="numeroMarchamo">
+                        No. de marchamo
+                    </label>
+
+                    <input
+                        type="text"
+                        id="numeroMarchamo"
+                        placeholder="Escribe el número de marchamo">
+
+                </div>
+
+            </section>
+
+
+            <!-- =========================
+                EVIDENCIA
+            ========================== -->
+
+            <section class="card">
+
+                <h2>Evidencia</h2>
+
+                <div class="campo">
+
+                    <label for="evidenciaEnvio">
+                        Fotografía
+                    </label>
+
+                    <input
+                        type="file"
+                        id="evidenciaEnvio"
+                        accept="image/*"
+                        capture="environment">
+
+                </div>
+
+
+                <div
+                    id="previewEvidencia"
+                    class="preview-evidencia oculto">
+
+                    <img
+                        id="imagenEvidencia"
+                        alt="Evidencia del envío">
+
+                </div>
+
+            </section>
+
+
+            <!-- =========================
+                ENVIAR
+            ========================== -->
+
+            <section class="acciones">
+
+                <button
+                    id="btnEnviarEstructuras"
+                    class="btn-enviar"
+                    type="button"
+                    disabled>
+
+                    ENVIAR
+
+                </button>
+
+            </section>
+
+        </section>
 
         <!-- DATOS GENERALES -->
 

@@ -368,3 +368,378 @@ select option {
     padding: .9rem;
     margin-top: .5rem;
 }
+
+
+/* =====================================================
+   MENÚ DE TRES PUNTOS
+===================================================== */
+
+.app-header {
+    position: relative;
+}
+
+.menu-container {
+    position: absolute;
+    top: 5px;
+    right: 0;
+    z-index: 1000;
+}
+
+.btn-menu {
+    width: 42px;
+    height: 42px;
+
+    background: #ffffff;
+    color: #000000;
+
+    border-radius: 50%;
+
+    font-size: 1.8rem;
+    font-weight: bold;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    line-height: 1;
+
+    box-shadow: 0 2px 8px rgba(0,0,0,.25);
+}
+
+.btn-menu:hover {
+    background: #eeeeee;
+}
+
+
+/* =========================
+   OPCIONES DEL MENÚ
+========================= */
+
+.menu-opciones {
+    position: absolute;
+
+    top: 48px;
+    right: 0;
+
+    width: 220px;
+
+    background: #ffffff;
+
+    border-radius: 12px;
+
+    box-shadow: 0 5px 20px rgba(0,0,0,.25);
+
+    padding: .5rem;
+
+    z-index: 2000;
+}
+
+.menu-opciones button {
+    width: 100%;
+
+    background: transparent;
+
+    color: #222;
+
+    text-align: left;
+
+    padding: .9rem;
+
+    border-radius: 8px;
+
+    font-size: .95rem;
+
+    font-weight: 600;
+}
+
+.menu-opciones button:hover {
+    background: #f1f1f1;
+}
+
+
+/* =====================================================
+   PANTALLA ENVÍO DE ESTRUCTURAS
+===================================================== */
+
+.envio-container {
+    width: 100%;
+}
+
+
+/* =========================
+   ENCABEZADO
+========================= */
+
+.envio-header {
+    position: relative;
+
+    text-align: center;
+
+    margin-bottom: 1rem;
+}
+
+.envio-header h2 {
+    color: #ffffff;
+
+    font-size: 1.5rem;
+
+    margin: .5rem 0 0;
+}
+
+
+/* =========================
+   REGRESAR
+========================= */
+
+.btn-regresar {
+    width: 100%;
+
+    background: #ffffff;
+
+    color: #000000;
+
+    padding: .75rem;
+
+    border-radius: 10px;
+
+    font-weight: 600;
+
+    margin-bottom: .75rem;
+}
+
+.btn-regresar:hover {
+    background: #eeeeee;
+}
+
+
+/* =====================================================
+   TABLA DE FOLIOS
+===================================================== */
+
+.tabla-folios-envio {
+    margin-top: 1rem;
+}
+
+.tabla-folios-envio table {
+    min-width: 500px;
+}
+
+.tabla-folios-envio th,
+.tabla-folios-envio td {
+    font-size: .85rem;
+    padding: .65rem .45rem;
+}
+
+
+/* =====================================================
+   RESUMEN DE ESTRUCTURAS
+===================================================== */
+
+.resumen-estructuras {
+    display: grid;
+
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: .75rem;
+}
+
+.resumen-item {
+    background: #f3f4f6;
+
+    border-radius: 10px;
+
+    padding: .85rem;
+
+    text-align: center;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: .3rem;
+}
+
+.resumen-item span {
+    font-size: .85rem;
+
+    color: #4b5563;
+
+    font-weight: 600;
+}
+
+.resumen-item strong {
+    font-size: 1.5rem;
+
+    color: #000000;
+}
+
+
+/* TOTAL */
+
+.resumen-item.resumen-total {
+    grid-column: 1 / -1;
+
+    background: #000000;
+
+    color: #ffffff;
+}
+
+.resumen-item.resumen-total span,
+.resumen-item.resumen-total strong {
+    color: #ffffff;
+}
+
+.resumen-item.resumen-total strong {
+    font-size: 2rem;
+}
+
+
+/* =====================================================
+   TOTAL DE TORNILLERÍA
+===================================================== */
+
+.total-tornilleria {
+    margin-top: 1rem;
+
+    background: #000000;
+
+    color: #ffffff;
+
+    border-radius: 10px;
+
+    padding: 1rem;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+}
+
+.total-tornilleria span {
+    font-weight: 600;
+}
+
+.total-tornilleria strong {
+    font-size: 1.8rem;
+}
+
+
+/* =====================================================
+   EVIDENCIA
+===================================================== */
+
+.preview-evidencia {
+    margin-top: 1rem;
+
+    text-align: center;
+}
+
+.preview-evidencia img {
+    width: 100%;
+
+    max-height: 300px;
+
+    object-fit: contain;
+
+    border-radius: 10px;
+
+    border: 1px solid #d1d5db;
+}
+
+
+/* =====================================================
+   ESCÁNER DE FOLIOS
+===================================================== */
+
+#readerEnvio {
+    width: 100%;
+
+    margin-top: 1rem;
+
+    border-radius: 12px;
+
+    overflow: hidden;
+}
+
+#scannerEnvioContainer {
+    margin-top: 1rem;
+}
+
+
+/* =====================================================
+   BOTÓN ENVIAR
+===================================================== */
+
+.btn-enviar {
+    width: 100%;
+
+    background: #000000;
+
+    color: #ffffff;
+
+    padding: 1rem;
+
+    font-size: 1rem;
+
+    font-weight: 700;
+
+    border-radius: 10px;
+}
+
+.btn-enviar:hover {
+    background: #171717;
+}
+
+.btn-enviar:disabled {
+    background: #9ca3af;
+
+    cursor: not-allowed;
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 480px) {
+
+    .container {
+        padding: .75rem;
+    }
+
+    .app-header img {
+        width: 190px;
+    }
+
+    .app-header h1 {
+        font-size: 1.35rem;
+
+        padding-right: 35px;
+    }
+
+    .menu-container {
+        right: 0;
+    }
+
+    .menu-opciones {
+        width: 200px;
+    }
+
+    .envio-header h2 {
+        font-size: 1.3rem;
+    }
+
+    .resumen-estructuras {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .resumen-item span {
+        font-size: .78rem;
+    }
+
+    .resumen-item strong {
+        font-size: 1.3rem;
+    }
+
+}
