@@ -152,6 +152,7 @@ function ocultarTodasLasSecciones() {
 
     const secciones = [
 
+        "seccionDatosGenerales",
         "seccionModoCamarones",
         "seccionAuxiliar",
         "seccionFolioGrupal",
@@ -167,9 +168,11 @@ function ocultarTodasLasSecciones() {
 
     secciones.forEach(id => {
 
-        document
-            .getElementById(id)
-            .classList.add("oculto");
+        const seccion = document.getElementById(id);
+
+        if (seccion) {
+            seccion.classList.add("oculto");
+        }
 
     });
 
@@ -1597,7 +1600,7 @@ function abrirEnvioEstructuras() {
 
     ocultarTodasLasSecciones();
 
-
+    
     /*
         Mostrar envío
     */
@@ -1704,6 +1707,7 @@ function regresarRecuperaciones() {
 
     }
 
+    mostrarSecciones("seccionDatosGenerales");
 
     /*
         Volver a mostrar el flujo
