@@ -2354,20 +2354,20 @@ function identificarTipoFolio(
 
 
     if (
-        valor === "G2I" ||
-        valor === "G2 IMPORTADA" ||
-        valor === "G2 IMPORTADA"
-    ) {
+    valor === "G2C" ||
+    valor === "G2I" ||
+    valor === "G2 IMPORTADA"
+) {
 
-        return {
+    return {
 
-            codigo: "G2I",
+        codigo: "G2I",
 
-            nombre: "G2 Importada"
+        nombre: "G2 Importada"
 
-        };
+    };
 
-    }
+}
 
 
     if (
@@ -2444,17 +2444,20 @@ function identificarTipoFolio(
     }
 
 
-    if (prefijo === "G2I") {
+    if (
+    prefijo === "G2C" ||
+    prefijo === "G2I"
+) {
 
-        return {
+    return {
 
-            codigo: "G2I",
+        codigo: "G2I",
 
-            nombre: "G2 Importada"
+        nombre: "G2 Importada"
 
-        };
+    };
 
-    }
+}
 
 
     if (prefijo === "G4Y") {
