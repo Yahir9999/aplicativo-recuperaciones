@@ -3298,130 +3298,227 @@ async function enviarEstructuras() {
     boton.disabled = true;
 
     boton.textContent =
-        "Enviando...";
+        "ENVIANDO...";
 
 
-    /*
-        ==============================================
-        POR AHORA
-        ==============================================
+    try {
 
-        Aquí posteriormente agregaremos:
+        // ==========================================
+        // CONVERTIR EVIDENCIA
+        // ==========================================
 
-        1. Convertir evidencia a Base64.
-        2. Enviarla a Apps Script.
-        3. Guardarla en Google Drive.
-        4. Registrar el envío en
-           "Envío de estructuras".
-
-    */
+        const archivo =
+            evidenciaEnvio.files[0];
 
 
-    const datosEnvio = {
-
-        cedi,
-
-        fecha,
-
-        folios:
-            foliosEnvio,
-
-        g2Nacional:
-            Number(
-                document.getElementById(
-                    "envioG2Nacional"
-                ).textContent
-            ),
-
-        g2Importada:
-            Number(
-                document.getElementById(
-                    "envioG2Importada"
-                ).textContent
-            ),
-
-        g4Y:
-            Number(
-                document.getElementById(
-                    "envioG4Y"
-                ).textContent
-            ),
-
-        g4B:
-            Number(
-                document.getElementById(
-                    "envioG4B"
-                ).textContent
-            ),
-
-        atv:
-            Number(
-                document.getElementById(
-                    "envioATV"
-                ).textContent
-            ),
-
-        cantidadTotal:
-            Number(
-                document.getElementById(
-                    "envioCantidadTotal"
-                ).textContent
-            ),
-
-        tornilloM6:
-            obtenerNumero(
-                "tornilloM6"
-            ),
-
-        tornilloM8:
-            obtenerNumero(
-                "tornilloM8"
-            ),
-
-        tornilloM8x55:
-            obtenerNumero(
-                "tornilloM8x55"
-            ),
-
-        totalTornilleria:
-            Number(
-                document.getElementById(
-                    "totalTornilleria"
-                ).textContent
-            ),
-
-        marchamo
-
-    };
+        const evidencia =
+            await convertirImagenBase64(
+                archivo
+            );
 
 
-    console.log(
-        "DATOS DEL ENVÍO:",
-        datosEnvio
+        // ==========================================
+        // DATOS DEL ENVÍO
+        // ==========================================
+
+        const datosEnvio = {
+
+            tipoOperacion:
+                "ENVIO_ESTRUCTURAS",
+
+            cedi,
+
+            fecha,
+
+            folios:
+                foliosEnvio,
+
+            tornilloM6:
+                obtenerNumero(
+                    "tornilloM6"
+                ),
+
+            tornilloM8:
+                obtenerNumero(
+                    "tornilloM8"
+                ),
+
+            tornilloM8x55:
+                obtenerNumero(
+                    "tornilloM8x55"
+                ),
+
+            marchamo,
+
+            evidencia
+
+        };
+
+
+        console.log(
+            "ENVIANDO:",
+            datosEnvio
+        );
+
+
+        // ==========================================
+        // ENVIAR A APPS SCRIPT
+        // ==========================================
+
+        const response =
+            await fetch(
+                URL_API,
+                {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "text/plain;charset=utf-8"
+
+                    },
+
+                    body:
+                        JSON.stringify(
+                            datosEnvio
+                        )
+
+                }
+            );
+
+
+        const resultado =
+            await response.json();
+
+
+        console.log(
+            "RESPUESTA APPS SCRIPT:",
+            resultado
+        );
+
+
+        // ==========================================
+        // ERROR
+        // ==========================================
+
+        if (
+            !resultado.success
+        ) {
+
+            throw new Error(
+                resultado.mensaje ||
+                "No se pudo registrar el envío."
+            );
+
+        }
+
+
+        // ==========================================
+        // ÉXITO
+        // ==========================================
+
+        alert(
+            "✅ Envío registrado correctamente.\n\n" +
+
+            "Folios: " +
+            resultado.folios.length +
+
+            "\nEstructuras: " +
+            resultado.cantidadTotal +
+
+            "\nTornillería: " +
+            resultado.totalTornilleria
+        );
+
+
+        // ==========================================
+        // LIMPIAR FORMULARIO
+        // ==========================================
+
+        limpiarEnvioEstructuras();
+
+
+    } catch (error) {
+
+        console.error(
+            "Error al enviar estructuras:",
+            error
+        );
+
+
+        alert(
+            "❌ No se pudo registrar el envío.\n\n" +
+            error.message
+        );
+
+
+    } finally {
+
+        boton.disabled = false;
+
+        boton.textContent =
+            "ENVIAR";
+
+        actualizarEstadoBotonEnvio();
+
+    }
+
+}
+
+function convertirImagenBase64(
+    archivo
+) {
+
+    return new Promise(
+        (resolve, reject) => {
+
+            const reader =
+                new FileReader();
+
+
+            reader.onload =
+                () => {
+
+                    const resultado =
+                        reader.result;
+
+
+                    const partes =
+                        resultado.split(",");
+
+
+                    resolve({
+
+                        mimeType:
+                            archivo.type ||
+                            "image/jpeg",
+
+                        base64:
+                            partes[1]
+
+                    });
+
+                };
+
+
+            reader.onerror =
+                () => {
+
+                    reject(
+                        new Error(
+                            "No se pudo leer la evidencia."
+                        )
+                    );
+
+                };
+
+
+            reader.readAsDataURL(
+                archivo
+            );
+
+        }
     );
-
-
-    /*
-        Esta parte temporalmente solo
-        comprueba que todo esté listo.
-    */
-
-    alert(
-        "Los datos del envío están listos.\n\n" +
-        "Folios: " +
-        foliosEnvio.length +
-        "\n" +
-        "Estructuras: " +
-        datosEnvio.cantidadTotal +
-        "\n" +
-        "Tornillería: " +
-        datosEnvio.totalTornilleria
-    );
-
-
-    boton.disabled = false;
-
-    boton.textContent =
-        "ENVIAR";
 
 }
