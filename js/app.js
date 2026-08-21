@@ -1338,9 +1338,13 @@ function limpiarFormulario() {
 
 }
 
-async function generarPDF() {
+        async function generarPDF() {
 
     let registrosPDF = ultimoLoteRegistrado;
+
+    // ==========================================
+    // OBTENER REGISTROS SI ES FOLIO GRUPAL
+    // ==========================================
 
     if (ultimoEsRegistroGrupal) {
 
@@ -1356,15 +1360,30 @@ async function generarPDF() {
         }
 
         registrosPDF = resultado.registros;
-
     }
 
+
+    // ==========================================
+    // CREAR PDF
+    // ==========================================
+
     const { jsPDF } = window.jspdf;
+
     const doc = new jsPDF();
+
+
+    // ==========================================
+    // MARCA DE AGUA
+    // ==========================================
 
     const marcaAgua = await cargarImagenBase64(
         "iconos/marca_de_agua.png"
     );
+
+
+    // ==========================================
+    // TÍTULO
+    // ==========================================
 
     doc.setFont("helvetica", "bold");
     doc.setFontSize(23);
@@ -1373,15 +1392,41 @@ async function generarPDF() {
         "LISTADO DE ESTRUCTURAS DE METAL",
         doc.internal.pageSize.getWidth() / 2,
         25,
-        { align: "center" }
+        {
+            align: "center"
+        }
     );
+
+
+    // ==========================================
+    // DATOS DEL FOLIO
+    // ==========================================
 
     doc.setFont("helvetica", "normal");
     doc.setFontSize(42);
 
-    doc.text(`Folio: ${ultimoFolio}`, 15, 45);
-    doc.text(`Fecha: ${ultimaFecha}`, 15, 62);
-    doc.text(`CEDI: ${ultimoCedi}`, 15, 79);
+    doc.text(
+        `Folio: ${ultimoFolio}`,
+        15,
+        45
+    );
+
+    doc.text(
+        `Fecha: ${ultimaFecha}`,
+        15,
+        62
+    );
+
+    doc.text(
+        `CEDI: ${ultimoCedi}`,
+        15,
+        79
+    );
+
+
+    // ==========================================
+    // MARCA DE AGUA
+    // ==========================================
 
     doc.addImage(
         marcaAgua,
@@ -1392,51 +1437,267 @@ async function generarPDF() {
         120
     );
 
-    const filas = registrosPDF.map((pieza, index) => [
-        index + 1,
-        pieza.estado,
-        pieza.estructura,
-        pieza.serie
-    ]);
+
+    // ==========================================
+    // TABLA
+    // ==========================================
+
+    const filas =
+        registrosPDF.map(
+            (pieza, index) => [
+
+                index + 1,
+                pieza.estado,
+                pieza.estructura,
+                pieza.serie
+
+            ]
+        );
+
 
     doc.autoTable({
+
         startY: 95,
-        head: [["#", "Estado", "Tipo de Estructura", "Serie"]],
+
+        head: [
+            [
+                "#",
+                "Estado",
+                "Tipo de Estructura",
+                "Serie"
+            ]
+        ],
+
         body: filas,
 
         styles: {
+
             fontSize: 10,
+
             cellPadding: 3,
+
             halign: "center",
+
             fillColor: false
+
         },
 
         headStyles: {
+
             fontSize: 10,
+
             fontStyle: "bold",
-            fillColor: [40, 132, 184],
-            textColor: [255, 255, 255]
+
+            fillColor: [
+                40,
+                132,
+                184
+            ],
+
+            textColor: [
+                255,
+                255,
+                255
+            ]
+
         },
 
         bodyStyles: {
+
             fillColor: false
+
         },
 
         alternateRowStyles: {
+
             fillColor: false
+
         }
+
     });
 
-    doc.setFont("helvetica", "bold");
+
+    // ==========================================
+    // TOTAL DE PIEZAS
+    // ==========================================
+
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
+
     doc.setFontSize(10);
+
+    const posicionTotal =
+        doc.lastAutoTable.finalY + 12;
+
 
     doc.text(
         `Total de piezas: ${registrosPDF.length}`,
         15,
-        doc.lastAutoTable.finalY + 12
+        posicionTotal
     );
 
-    doc.save(`${ultimoFolio}.pdf`);
+
+    // ==========================================
+    // GENERAR QR
+    // ==========================================
+
+    const qrData =
+        String(ultimoFolio);
+
+
+    const qrContainer =
+        document.createElement("div");
+
+
+    qrContainer.style.position =
+        "absolute";
+
+    qrContainer.style.left =
+        "-9999px";
+
+    qrContainer.style.top =
+        "-9999px";
+
+
+    document.body.appendChild(
+        qrContainer
+    );
+
+
+    new QRCode(
+        qrContainer,
+        {
+
+            text: qrData,
+
+            width: 300,
+
+            height: 300,
+
+            correctLevel:
+                QRCode.CorrectLevel.H
+
+        }
+    );
+
+
+    // ==========================================
+    // ESPERAR A QUE SE GENERE
+    // ==========================================
+
+    await new Promise(
+        resolve =>
+            setTimeout(
+                resolve,
+                100
+            )
+    );
+
+
+    const qrCanvas =
+        qrContainer.querySelector(
+            "canvas"
+        );
+
+
+    if (!qrCanvas) {
+
+        document.body.removeChild(
+            qrContainer
+        );
+
+        alert(
+            "No se pudo generar el QR."
+        );
+
+        return;
+
+    }
+
+
+    const qrBase64 =
+        qrCanvas.toDataURL(
+            "image/png"
+        );
+
+
+    // ==========================================
+    // ELIMINAR QR TEMPORAL
+    // ==========================================
+
+    document.body.removeChild(
+        qrContainer
+    );
+
+
+    // ==========================================
+    // COLOCAR QR EN EL PDF
+    // ==========================================
+
+    const pageWidth =
+        doc.internal.pageSize.getWidth();
+
+    const pageHeight =
+        doc.internal.pageSize.getHeight();
+
+
+    const qrSize = 45;
+
+
+    const qrX =
+        (pageWidth - qrSize) / 2;
+
+
+    /*
+        Lo colocamos en la parte inferior
+        de la hoja, sin tocar la tabla.
+    */
+
+    const qrY =
+        pageHeight - 65;
+
+
+    doc.addImage(
+        qrBase64,
+        "PNG",
+        qrX,
+        qrY,
+        qrSize,
+        qrSize
+    );
+
+
+    // ==========================================
+    // TEXTO DE APOYO
+    // ==========================================
+
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
+
+    doc.setFontSize(9);
+
+    doc.text(
+        "ESCANEAR PARA ENVÍO",
+        pageWidth / 2,
+        qrY + qrSize + 8,
+        {
+            align: "center"
+        }
+    );
+
+
+    // ==========================================
+    // GUARDAR PDF
+    // ==========================================
+
+    doc.save(
+        `${ultimoFolio}.pdf`
+    );
+
 }
 
 function cargarImagenBase64(ruta) {
