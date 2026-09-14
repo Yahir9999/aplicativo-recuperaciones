@@ -3,6 +3,66 @@ const URL_API =
   "https://script.google.com/macros/s/AKfycbxv_L6y26hgYjC7X3gUJKoPopdb7D-IAi8vaOTknXz5xUSN0CtQS5tzZabxMAfpEfX6/exec";
 
 
+// ======================================================
+// FUENTE MONTSERRAT PARA jsPDF
+// ======================================================
+
+async function cargarMontserrat() {
+
+    const convertirABase64 = async (url) => {
+        const respuesta = await fetch(url);
+        const buffer = await respuesta.arrayBuffer();
+
+        let binary = "";
+        const bytes = new Uint8Array(buffer);
+
+        for (let i = 0; i < bytes.length; i++) {
+            binary += String.fromCharCode(bytes[i]);
+        }
+
+        return btoa(binary);
+    };
+
+    const regular = await convertirABase64(
+        "./fuentes/Montserrat-Regular.ttf"
+    );
+
+    const bold = await convertirABase64(
+        "./fuentes/Montserrat-Bold.ttf"
+    );
+
+    const { jsPDF } = window.jspdf;
+
+    jsPDF.API.events.push([
+        "initialized",
+        function () {
+            this.addFileToVFS(
+                "Montserrat-Regular.ttf",
+                regular
+            );
+
+            this.addFont(
+                "Montserrat-Regular.ttf",
+                "Montserrat",
+                "normal"
+            );
+
+            this.addFileToVFS(
+                "Montserrat-Bold.ttf",
+                bold
+            );
+
+            this.addFont(
+                "Montserrat-Bold.ttf",
+                "Montserrat",
+                "bold"
+            );
+        }
+    ]);
+}
+
+const montserratCargada = cargarMontserrat();
+
 
 
   let catalogos = {
@@ -1752,6 +1812,10 @@ let foliosEnvio = [];
 let scannerEnvio = null;
 let scannerEnvioActivo = false;
 
+// Indica si ya se generó el PDF oficial del envío
+let pdfEnvioGenerado = false;
+let pdfEnvioBase64 = "";
+
 
 /*
     Cantidad de estructuras por folio
@@ -2305,6 +2369,20 @@ if (btnAgregarFolioEnvio) {
 
 }
 
+const btnGenerarPDFEnvio =
+    document.getElementById(
+        "btnGenerarPDFEnvio"
+    );
+
+if (btnGenerarPDFEnvio) {
+
+    btnGenerarPDFEnvio.addEventListener(
+        "click",
+        generarPDFEnvio
+    );
+
+}
+
 
 /* =====================================================
    ENTER EN FOLIO
@@ -2512,16 +2590,14 @@ async function validarYAgregarFolioEnvio() {
         */
 
         foliosEnvio.push({
-
             folio: folio,
-
             tipo: tipo.codigo,
-
             nombre: tipo.nombre,
+            cantidad: cantidad,
 
-            cantidad: cantidad
-
-        });
+            nuevoRetorno: "",
+            observaciones: ""
+    });
 
 
         /*
@@ -2776,12 +2852,9 @@ function renderizarFoliosEnvio() {
             "tablaFoliosEnvio"
         );
 
-
     if (!tbody) return;
 
-
     tbody.innerHTML = "";
-
 
     foliosEnvio.forEach(
         (item, index) => {
@@ -2790,7 +2863,6 @@ function renderizarFoliosEnvio() {
                 document.createElement(
                     "tr"
                 );
-
 
             fila.innerHTML = `
 
@@ -2811,6 +2883,49 @@ function renderizarFoliosEnvio() {
                 </td>
 
                 <td>
+                    <input
+                        type="text"
+                        class="tipo-estructura-envio"
+                        value="${item.tipo}"
+                        readonly>
+                </td>
+
+                <td>
+                    <select
+                        class="nuevo-retorno-envio"
+                        data-index="${index}">
+
+                        <option
+                            value=""
+                            ${item.nuevoRetorno === "" ? "selected" : ""}>
+                            Seleccionar
+                        </option>
+
+                        <option
+                            value="NUEVO"
+                            ${item.nuevoRetorno === "NUEVO" ? "selected" : ""}>
+                            Nuevo
+                        </option>
+
+                        <option
+                            value="RETORNO"
+                            ${item.nuevoRetorno === "RETORNO" ? "selected" : ""}>
+                            Retorno
+                        </option>
+
+                    </select>
+                </td>
+
+                <td>
+                    <input
+                    type="text"
+                    class="observaciones-envio"
+                    data-index="${index}"
+                    value="${item.observaciones || ""}"
+                    placeholder="Observaciones">
+                </td>
+
+                <td>
 
                     <button
                         type="button"
@@ -2825,7 +2940,6 @@ function renderizarFoliosEnvio() {
 
             `;
 
-
             tbody.appendChild(
                 fila
             );
@@ -2834,6 +2948,70 @@ function renderizarFoliosEnvio() {
     );
 
 }
+
+
+/* =====================================================
+   GUARDAR DATOS ADICIONALES DE CADA FOLIO
+===================================================== */
+
+document.addEventListener(
+    "change",
+    (e) => {
+
+        const select =
+            e.target.closest(
+                ".nuevo-retorno-envio"
+            );
+
+        if (!select) return;
+
+        const index =
+            Number(
+                select.dataset.index
+            );
+
+        if (
+            Number.isNaN(index) ||
+            !foliosEnvio[index]
+        ) {
+            return;
+        }
+
+        foliosEnvio[index].nuevoRetorno =
+            select.value;
+
+    }
+);
+
+
+document.addEventListener(
+    "input",
+    (e) => {
+
+        const input =
+            e.target.closest(
+                ".observaciones-envio"
+            );
+
+        if (!input) return;
+
+        const index =
+            Number(
+                input.dataset.index
+            );
+
+        if (
+            Number.isNaN(index) ||
+            !foliosEnvio[index]
+        ) {
+            return;
+        }
+
+        foliosEnvio[index].observaciones =
+            input.value;
+
+    }
+);
 
 
 /* =====================================================
@@ -3000,9 +3178,7 @@ function actualizarResumenEnvio() {
 }
 
 
-/* =====================================================
-   TORNILLERÍA
-===================================================== */
+/* TORNILLERÍA */
 
 const camposTornilleria = [
 
@@ -3107,94 +3283,7 @@ function actualizarTotalTornilleria() {
 }
 
 
-/* =====================================================
-   EVIDENCIA
-===================================================== */
-
-const evidenciaEnvio =
-    document.getElementById(
-        "evidenciaEnvio"
-    );
-
-
-if (evidenciaEnvio) {
-
-    evidenciaEnvio.addEventListener(
-        "change",
-        mostrarPreviewEvidencia
-    );
-
-}
-
-
-function mostrarPreviewEvidencia() {
-
-    const archivo =
-        evidenciaEnvio.files[0];
-
-
-    const preview =
-        document.getElementById(
-            "previewEvidencia"
-        );
-
-
-    const imagen =
-        document.getElementById(
-            "imagenEvidencia"
-        );
-
-
-    if (
-        !archivo ||
-        !archivo.type.startsWith(
-            "image/"
-        )
-    ) {
-
-        preview.classList.add(
-            "oculto"
-        );
-
-        imagen.src = "";
-
-        actualizarEstadoBotonEnvio();
-
-        return;
-
-    }
-
-
-    const reader =
-        new FileReader();
-
-
-    reader.onload =
-        (e) => {
-
-            imagen.src =
-                e.target.result;
-
-            preview.classList.remove(
-                "oculto"
-            );
-
-        };
-
-
-    reader.readAsDataURL(
-        archivo
-    );
-
-
-    actualizarEstadoBotonEnvio();
-
-}
-
-
-/* =====================================================
-   HABILITAR / DESHABILITAR ENVIAR
-===================================================== */
+/* HABILITAR / DESHABILITAR ENVIAR */
 
 function actualizarEstadoBotonEnvio() {
 
@@ -3203,51 +3292,39 @@ function actualizarEstadoBotonEnvio() {
             "btnEnviarEstructuras"
         );
 
-
     if (!boton) return;
-
 
     const cedi =
         document.getElementById(
             "envioCedi"
         )?.value;
 
-
     const fecha =
         document.getElementById(
             "fechaEnvio"
         )?.value;
-
 
     const marchamo =
         document.getElementById(
             "numeroMarchamo"
         )?.value.trim();
 
-
     /*
-        Por ahora pedimos:
+        Para poder enviar necesitamos:
 
         CEDI
         Fecha
         Al menos un folio
         Marchamo
-        Evidencia
+        PDF oficial generado
     */
-
-    const evidencia =
-        document.getElementById(
-            "evidenciaEnvio"
-        )?.files.length > 0;
-
 
     boton.disabled =
         !cedi ||
         !fecha ||
         foliosEnvio.length === 0 ||
         !marchamo ||
-        !evidencia;
-
+        !pdfEnvioGenerado;
 }
 
 
@@ -3336,6 +3413,219 @@ function mostrarMensajeFolioEnvio(
 
 }
 
+/* =====================================================
+   FIRMAS DIGITALES DEL ENVÍO
+===================================================== */
+
+function prepararFirmaCanvas(idCanvas) {
+
+    const canvas =
+        document.getElementById(idCanvas);
+
+    if (!canvas) return;
+
+    const ctx =
+        canvas.getContext("2d");
+
+    let dibujando = false;
+
+    function obtenerPosicion(e) {
+
+        const rect =
+            canvas.getBoundingClientRect();
+
+        const escalaX =
+            canvas.width / rect.width;
+
+        const escalaY =
+            canvas.height / rect.height;
+
+        let clienteX;
+        let clienteY;
+
+        if (e.touches && e.touches.length > 0) {
+
+            clienteX =
+                e.touches[0].clientX;
+
+            clienteY =
+                e.touches[0].clientY;
+
+        } else {
+
+            clienteX =
+                e.clientX;
+
+            clienteY =
+                e.clientY;
+
+        }
+
+        return {
+            x:
+                (clienteX - rect.left) *
+                escalaX,
+
+            y:
+                (clienteY - rect.top) *
+                escalaY
+        };
+
+    }
+
+
+    function comenzarFirma(e) {
+
+        e.preventDefault();
+
+        dibujando = true;
+
+        const posicion =
+            obtenerPosicion(e);
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            posicion.x,
+            posicion.y
+        );
+
+    }
+
+
+    function dibujarFirma(e) {
+
+        if (!dibujando) return;
+
+        e.preventDefault();
+
+        const posicion =
+            obtenerPosicion(e);
+
+        ctx.lineTo(
+            posicion.x,
+            posicion.y
+        );
+
+        ctx.stroke();
+
+    }
+
+
+    function terminarFirma(e) {
+
+        if (!dibujando) return;
+
+        e.preventDefault();
+
+        dibujando = false;
+
+        ctx.closePath();
+
+    }
+
+
+    ctx.lineWidth = 2.5;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.strokeStyle = "#000000";
+
+
+    /* MOUSE */
+
+    canvas.addEventListener(
+        "mousedown",
+        comenzarFirma
+    );
+
+    canvas.addEventListener(
+        "mousemove",
+        dibujarFirma
+    );
+
+    canvas.addEventListener(
+        "mouseup",
+        terminarFirma
+    );
+
+    canvas.addEventListener(
+        "mouseleave",
+        terminarFirma
+    );
+
+
+    /* TOUCH */
+
+    canvas.addEventListener(
+        "touchstart",
+        comenzarFirma,
+        { passive: false }
+    );
+
+    canvas.addEventListener(
+        "touchmove",
+        dibujarFirma,
+        { passive: false }
+    );
+
+    canvas.addEventListener(
+        "touchend",
+        terminarFirma,
+        { passive: false }
+    );
+
+}
+
+
+/* PREPARAR LAS DOS FIRMAS DIGITALES */
+
+prepararFirmaCanvas(
+    "firmaGerente"
+);
+
+prepararFirmaCanvas(
+    "firmaJefeEstructuras"
+);
+
+
+/* =====================================================
+   LIMPIAR FIRMAS
+===================================================== */
+
+document.addEventListener(
+    "click",
+    (e) => {
+
+        const boton =
+            e.target.closest(
+                ".btn-limpiar-firma"
+            );
+
+        if (!boton) return;
+
+        const idCanvas =
+            boton.dataset.firma;
+
+        const canvas =
+            document.getElementById(
+                idCanvas
+            );
+
+        if (!canvas) return;
+
+        const ctx =
+            canvas.getContext("2d");
+
+        ctx.clearRect(
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+
+    }
+);
+
 
 /* =====================================================
    LIMPIAR ENVÍO
@@ -3345,6 +3635,7 @@ function limpiarEnvioEstructuras() {
 
     foliosEnvio = [];
 
+    pdfEnvioGenerado = false;
 
     renderizarFoliosEnvio();
 
@@ -3405,43 +3696,6 @@ function limpiarEnvioEstructuras() {
 
         }
     );
-
-
-    if (evidenciaEnvio) {
-
-        evidenciaEnvio.value =
-            "";
-
-    }
-
-
-    const preview =
-        document.getElementById(
-            "previewEvidencia"
-        );
-
-
-    const imagen =
-        document.getElementById(
-            "imagenEvidencia"
-        );
-
-
-    if (preview) {
-
-        preview.classList.add(
-            "oculto"
-        );
-
-    }
-
-
-    if (imagen) {
-
-        imagen.src = "";
-
-    }
-
 
     actualizarTotalTornilleria();
 
@@ -3535,19 +3789,17 @@ async function enviarEstructuras() {
 
     }
 
+    if (!pdfEnvioGenerado || !pdfEnvioBase64) {
 
-    if (
-        !evidenciaEnvio ||
-        evidenciaEnvio.files.length === 0
-    ) {
+    alert(
+        "Primero debes generar el PDF del envío."
+    );
 
-        alert(
-            "Agrega una evidencia."
-        );
+    return;
 
-        return;
+}
 
-    }
+
 
 
     const boton =
@@ -3564,18 +3816,7 @@ async function enviarEstructuras() {
 
     try {
 
-        // ==========================================
-        // CONVERTIR EVIDENCIA
-        // ==========================================
-
-        const archivo =
-            evidenciaEnvio.files[0];
-
-
-        const evidencia =
-            await convertirImagenBase64(
-                archivo
-            );
+        
 
 
         // ==========================================
@@ -3594,6 +3835,9 @@ async function enviarEstructuras() {
             folios:
                 foliosEnvio,
 
+            pdfBase64:
+                pdfEnvioBase64,
+
             tornilloM6:
                 obtenerNumero(
                     "tornilloM6"
@@ -3609,9 +3853,7 @@ async function enviarEstructuras() {
                     "tornilloM8x55"
                 ),
 
-            marchamo,
-
-            evidencia
+            marchamo
 
         };
 
@@ -3727,59 +3969,1294 @@ async function enviarEstructuras() {
 
 }
 
-function convertirImagenBase64(
-    archivo
-) {
+            function obtenerFirmaRecortada(canvas) {
 
-    return new Promise(
-        (resolve, reject) => {
+                const ctx = canvas.getContext("2d");
 
-            const reader =
-                new FileReader();
+                const datos = ctx.getImageData(
+                    0,
+                    0,
+                    canvas.width,
+                    canvas.height
+                );
+
+                let minX = canvas.width;
+                let minY = canvas.height;
+                let maxX = 0;
+                let maxY = 0;
+
+                for (let y = 0; y < canvas.height; y++) {
+
+                    for (let x = 0; x < canvas.width; x++) {
+
+                        const i =
+                            (y * canvas.width + x) * 4;
+
+                        const r = datos.data[i];
+                        const g = datos.data[i + 1];
+                        const b = datos.data[i + 2];
+
+                        // Detectar trazos oscuros
+                        if (
+                            r < 200 ||
+                            g < 200 ||
+                            b < 200
+                        ) {
+
+                            if (x < minX) minX = x;
+                            if (y < minY) minY = y;
+                            if (x > maxX) maxX = x;
+                            if (y > maxY) maxY = y;
+
+                        }
+
+                    }
+
+                }
+
+                // Si no hay firma
+                if (
+                    minX >= maxX ||
+                    minY >= maxY
+                ) {
+                    return null;
+                }
+
+                const margen = 10;
+
+                minX = Math.max(0, minX - margen);
+                minY = Math.max(0, minY - margen);
+
+                maxX = Math.min(
+                    canvas.width,
+                    maxX + margen
+                );
+
+                maxY = Math.min(
+                    canvas.height,
+                    maxY + margen
+                );
+
+                const ancho = maxX - minX;
+                const alto = maxY - minY;
+
+                const recorte =
+                    document.createElement("canvas");
+
+                recorte.width = ancho;
+                recorte.height = alto;
+
+                const ctxRecorte =
+                    recorte.getContext("2d");
+
+                ctxRecorte.fillStyle = "#ffffff";
+
+                ctxRecorte.fillRect(
+                    0,
+                    0,
+                    ancho,
+                    alto
+                );
+
+                ctxRecorte.drawImage(
+                    canvas,
+                    minX,
+                    minY,
+                    ancho,
+                    alto,
+                    0,
+                    0,
+                    ancho,
+                    alto
+                );
+
+                return recorte.toDataURL("image/png");
+            }
+
+async function generarPDFEnvio() {
+
+    try {
+
+        if (!window.jspdf) {
+            alert("No se pudo cargar jsPDF.");
+            return;
+        }
+
+        await montserratCargada;
+
+        const { jsPDF } = window.jspdf;
+
+        const doc = new jsPDF({
+            orientation: "portrait",
+            unit: "mm",
+            format: "letter"
+        });
 
 
-            reader.onload =
-                () => {
+        // =====================================================
+        // DATOS
+        // =====================================================
 
-                    const resultado =
-                        reader.result;
+        const fecha =
+            document.getElementById("fechaEnvio")?.value || "";
 
+        const marchamo =
+            document.getElementById("numeroMarchamo")?.value || "";
 
-                    const partes =
-                        resultado.split(",");
-
-
-                    resolve({
-
-                        mimeType:
-                            archivo.type ||
-                            "image/jpeg",
-
-                        base64:
-                            partes[1]
-
-                    });
-
-                };
+        const cedi =
+            document.getElementById("envioCedi")?.value || "";
 
 
-            reader.onerror =
-                () => {
+        const transporte =
+            document.getElementById("transportePDF")?.value || "";
 
-                    reject(
-                        new Error(
-                            "No se pudo leer la evidencia."
-                        )
-                    );
+        const operador =
+            document.getElementById("operadorPDF")?.value || "";
 
-                };
+        const placas =
+            document.getElementById("placasPDF")?.value || "";
+
+        const tipoCaja =
+            document.getElementById("tipoCajaPDF")?.value || "";
+
+        const horaLlegada =
+            document.getElementById("horaLlegadaPDF")?.value || "";
+
+        const horaSalida =
+            document.getElementById("horaSalidaPDF")?.value || "";
 
 
-            reader.readAsDataURL(
-                archivo
-            );
+        // =====================================================
+        // FECHA
+        // =====================================================
+
+        let fechaFormateada = fecha;
+
+        if (fecha) {
+
+            const partes = fecha.split("-");
+
+            if (partes.length === 3) {
+
+                fechaFormateada =
+                    `${partes[2]}/${partes[1]}/${partes[0]}`;
+
+            }
 
         }
-    );
+
+
+        // =====================================================
+        // CONFIGURACIÓN GENERAL
+        // =====================================================
+
+        const margen = 12;
+
+        const anchoPagina =
+            doc.internal.pageSize.getWidth();
+
+        const altoPagina =
+            doc.internal.pageSize.getHeight();
+
+
+        doc.setTextColor(0, 0, 0);
+
+        doc.setDrawColor(0, 0, 0);
+
+        doc.setLineWidth(0.25);
+
+
+        // =====================================================
+        // TÍTULO
+        // =====================================================
+
+        doc.setFont("Montserrat", "bold");
+
+        doc.setFontSize(13);
+
+        doc.text(
+            "RECOLECCIÓN DE ESTRUCTURAS CEDIS VENTO",
+            anchoPagina / 2,
+            15,
+            {
+                align: "center"
+            }
+        );
+
+
+        // =====================================================
+        // FECHA Y MARCHAMO
+        // =====================================================
+
+        doc.setFontSize(9);
+
+        doc.text(
+            `Fecha: ${fechaFormateada}`,
+            55,
+            25,
+            {
+                align: "center"
+            }
+        );
+
+
+        doc.text(
+            `Folio de marchamo: ${marchamo}`,
+            145,
+            25,
+            {
+                align: "center"
+            }
+        );
+
+
+        // =====================================================
+        // SOLICITANTE / UBICACIÓN
+        // =====================================================
+
+        doc.text(
+            "Solicitante: INGRID MEDINA",
+            62,
+            35,
+            {
+                align: "center"
+            }
+        );
+
+
+        doc.text(
+            `Ubicación: ${cedi}`,
+            150,
+            35,
+            {
+                align: "center"
+            }
+        );
+
+
+        // =====================================================
+        // ÁREA
+        // =====================================================
+
+        doc.text(
+            "Área: CEDIS",
+            margen,
+            45
+        );
+
+
+        // =====================================================
+        // TEXTO INTRODUCTORIO
+        // =====================================================
+
+        doc.setFont(
+            "Montserrat",
+            "normal"
+        );
+
+        doc.setFontSize(8.5);
+
+        doc.text(
+            "Se realiza recolección de la siguiente cantidad de estructuras:",
+            margen,
+            53
+        );
+
+
+        // =====================================================
+        // COMPOSICIÓN DE ESTRUCTURAS
+        // =====================================================
+
+        const componentes = {
+
+            G2N: {
+                BASE: 1,
+                TAPA: 1,
+                POSTE: 2,
+                H: 2,
+                TRAVESAÑO: 0
+            },
+
+            G2I: {
+                BASE: 1,
+                TAPA: 1,
+                POSTE: 2,
+                H: 2,
+                TRAVESAÑO: 0
+            },
+
+            G2C: {
+                BASE: 1,
+                TAPA: 1,
+                POSTE: 2,
+                H: 2,
+                TRAVESAÑO: 0
+            },
+
+            G4Y: {
+                TAPA: 1,
+                BASE: 1,
+                POSTE: 2,
+                H: 2,
+                TRAVESAÑO: 0
+            },
+
+            G4B: {
+                TAPA: 1,
+                BASE: 1,
+                POSTE: 2,
+                H: 2,
+                TRAVESAÑO: 0
+            },
+
+            ATV: {
+                BASE: 1,
+                TAPA: 1,
+                POSTE: 4,
+                H: 2,
+                TRAVESAÑO: 2
+            }
+
+        };
+
+
+        // =====================================================
+        // AGRUPAR TIPOS
+        // =====================================================
+
+        const agrupados = {};
+
+
+        foliosEnvio.forEach(pieza => {
+
+            const tipo =
+                String(pieza.tipo || "")
+                    .trim()
+                    .toUpperCase();
+
+
+            if (!agrupados[tipo]) {
+
+                agrupados[tipo] = {
+
+                    tipo: tipo,
+
+                    cantidad: 0,
+
+                    nuevoRetorno:
+                        pieza.nuevoRetorno || "",
+
+                    observaciones:
+                        pieza.observaciones || ""
+
+                };
+
+            }
+
+
+            agrupados[tipo].cantidad +=
+                Number(pieza.cantidad) || 0;
+
+
+            if (
+                pieza.nuevoRetorno &&
+                agrupados[tipo].nuevoRetorno &&
+                pieza.nuevoRetorno !==
+                agrupados[tipo].nuevoRetorno
+            ) {
+
+                agrupados[tipo].nuevoRetorno =
+                    "MIXTO";
+
+            }
+
+
+            if (
+                pieza.observaciones &&
+                agrupados[tipo].observaciones &&
+                pieza.observaciones !==
+                agrupados[tipo].observaciones
+            ) {
+
+                agrupados[tipo].observaciones =
+                    "VARIAS";
+
+            }
+
+        });
+
+
+        // =====================================================
+        // CREAR FILAS
+        // =====================================================
+
+        const filas = [];
+
+        let numeroItem = 1;
+
+
+        Object.values(agrupados).forEach(grupo => {
+
+            const composicion =
+                componentes[grupo.tipo];
+
+
+            if (!composicion) {
+
+                filas.push([
+
+                    numeroItem++,
+
+                    grupo.tipo,
+
+                    grupo.cantidad,
+
+                    grupo.tipo,
+
+                    grupo.nuevoRetorno,
+
+                    grupo.observaciones
+
+                ]);
+
+                return;
+
+            }
+
+
+            Object.entries(composicion).forEach(
+                ([componente, multiplicador]) => {
+
+                    if (
+                        multiplicador === 0
+                    ) {
+                        return;
+                    }
+
+
+                    const cantidad =
+                        grupo.cantidad *
+                        multiplicador;
+
+
+                    filas.push([
+
+                        numeroItem++,
+
+                        componente,
+
+                        cantidad,
+
+                        grupo.tipo,
+
+                        grupo.nuevoRetorno,
+
+                        grupo.observaciones
+
+                    ]);
+
+                }
+            );
+
+        });
+
+
+        // =====================================================
+        // TORNILLERÍA
+        // =====================================================
+
+        const m6 =
+            obtenerNumero("tornilloM6");
+
+        const m8 =
+            obtenerNumero("tornilloM8");
+
+        const m8x55 =
+            obtenerNumero("tornilloM8x55");
+
+
+        /*
+            Para conservar el estilo del formato original,
+            mostramos la tornillería como filas adicionales
+            únicamente cuando tenga cantidad.
+        */
+
+        if (m6 > 0) {
+
+            filas.push([
+
+                numeroItem++,
+
+                "TORNILLO M6",
+
+                m6,
+
+                "",
+
+                "RETORNO",
+
+                ""
+
+            ]);
+
+        }
+
+
+        if (m8 > 0) {
+
+            filas.push([
+
+                numeroItem++,
+
+                "TORNILLO M8",
+
+                m8,
+
+                "",
+
+                "RETORNO",
+
+                ""
+
+            ]);
+
+        }
+
+
+        if (m8x55 > 0) {
+
+            filas.push([
+
+                numeroItem++,
+
+                "TORNILLO M8x55",
+
+                m8x55,
+
+                "",
+
+                "RETORNO",
+
+                ""
+
+            ]);
+
+        }
+
+
+        // =====================================================
+        // TABLA PRINCIPAL
+        // =====================================================
+
+        doc.autoTable({
+
+            startY: 57,
+
+            margin: {
+                left: margen,
+                right: margen
+            },
+
+            head: [[
+
+                "ITEM",
+
+                "ARTÍCULO (DESCRIPCIÓN)",
+
+                "CANTIDAD",
+
+                "TIPO",
+
+                "NUEVO Y/O RETORNO",
+
+                "OBSERVACIONES"
+
+            ]],
+
+            body: filas,
+
+            theme: "grid",
+
+            styles: {
+
+                font: "helvetica",
+
+                fontSize:
+                    7.5,
+
+                textColor:
+                    [0, 0, 0],
+
+                lineColor:
+                    [0, 0, 0],
+
+                lineWidth:
+                    0.5,
+
+                cellPadding:
+                    1.8,
+
+                valign:
+                    "middle"
+
+            },
+
+            headStyles: {
+
+                fontStyle:
+                    "bold",
+
+                fontSize:
+                    7.5,
+
+                textColor:
+                    [0, 0, 0],
+
+                fillColor:
+                    [190, 190, 190],
+
+                lineColor:
+                    [0, 0, 0],
+
+                lineWidth:
+                    0.5,
+
+                halign:
+                    "center",
+
+                valign:
+                    "middle"
+
+            },
+
+            columnStyles: {
+
+                0: {
+                    cellWidth: 10,
+                    halign: "center"
+                },
+
+                1: {
+                    cellWidth: 52,
+                    halign: "center"
+                },
+
+                2: {
+                    cellWidth: 22,
+                    halign: "center"
+                },
+
+                3: {
+                    cellWidth: 18,
+                    halign: "center"
+                },
+
+                4: {
+                    cellWidth: 38,
+                    halign: "center"
+                },
+
+                5: {
+                    cellWidth: 48
+                }
+
+            }
+
+        });
+
+
+        // =====================================================
+        // POSICIÓN DESPUÉS DE TABLA
+        // =====================================================
+
+        let y =
+            doc.lastAutoTable.finalY + 4;
+
+
+        // =====================================================
+        // DATOS DE IDENTIFICACIÓN DEL TRANSPORTE
+        // =====================================================
+
+        doc.setFont(
+            "Montserrat",
+            "normal"
+        );
+
+        doc.setFontSize(8.5);
+
+        doc.text(
+            "Datos de identificación del transporte:",
+            margen,
+            y
+        );
+
+
+        y += 3;
+
+
+        // =====================================================
+        // TABLA TRANSPORTE
+        // =====================================================
+
+        doc.autoTable({
+
+            startY: y,
+
+            margin: {
+                left: margen,
+                right: margen
+            },
+
+            head: [[
+
+                "Transporte",
+
+                "Nombre del operador",
+
+                "Placas del transporte",
+
+                "Tipo de caja"
+
+            ]],
+
+            body: [[
+
+                transporte,
+
+                operador,
+
+                placas,
+
+                tipoCaja
+
+            ]],
+
+            theme: "grid",
+
+            styles: {
+
+                font:
+                    "Montserrat",
+
+                fontSize:
+                    7.5,
+
+                textColor:
+                    [0, 0, 0],
+
+                lineColor:
+                    [0, 0, 0],
+
+                lineWidth:
+                    0.25,
+
+                cellPadding:
+                    2.2,
+
+                halign:
+                    "center",
+
+                valign:
+                    "middle"
+
+            },
+
+            headStyles: {
+
+                fontStyle:
+                    "bold",
+
+                fillColor:
+                    [255, 255, 255],
+
+                textColor:
+                    [0, 0, 0],
+
+                halign:
+                    "left"
+
+            },
+
+            columnStyles: {
+
+                0: {
+                    cellWidth: 47
+                },
+
+                1: {
+                    cellWidth: 60
+                },
+
+                2: {
+                    cellWidth: 47
+                },
+
+                3: {
+                    cellWidth: 34
+                }
+
+            }
+
+        });
+
+
+        // =====================================================
+        // HORARIOS / DESTINO
+        // =====================================================
+
+        y =
+            doc.lastAutoTable.finalY + 4;
+
+
+        doc.autoTable({
+
+            startY: y,
+
+            margin: {
+                left: margen,
+                right: margen
+            },
+
+            head: [[
+
+                "Hora de llegada del transporte:",
+
+                "Hora de salida del transporte:",
+
+                "Destinatario:",
+
+                "Destino:"
+
+            ]],
+
+            body: [[
+
+                horaLlegada,
+
+                horaSalida,
+
+                "INGRID MEDINA",
+
+                "TOLUCA PARK / NAVE 1 / ESTRUCTURAS"
+
+            ]],
+
+            theme: "grid",
+
+            styles: {
+
+                font:
+                    "Montserrat",
+
+                fontSize:
+                    7.5,
+
+                textColor:
+                    [0, 0, 0],
+
+                lineColor:
+                    [0, 0, 0],
+
+                lineWidth:
+                    0.25,
+
+                cellPadding:
+                    2.2,
+
+                halign:
+                    "center",
+
+                valign:
+                    "middle"
+
+            },
+
+            headStyles: {
+
+                fontStyle:
+                    "bold",
+
+                fillColor:
+                    [255, 255, 255],
+
+                textColor:
+                    [0, 0, 0],
+
+                halign:
+                    "left"
+
+            },
+
+            columnStyles: {
+
+                0: {
+                    cellWidth: 47
+                },
+
+                1: {
+                    cellWidth: 60
+                },
+
+                2: {
+                    cellWidth: 47
+                },
+
+                3: {
+                    cellWidth: 34
+                }
+
+            }
+
+        });
+
+
+        // =====================================================
+        // FIRMAS
+        // =====================================================
+
+        y =
+            doc.lastAutoTable.finalY + 4;
+
+        const canvasGerente =
+            document.getElementById(
+                "firmaGerente"
+            );
+
+        const canvasJefe =
+            document.getElementById(
+                "firmaJefeEstructuras"
+            );
+
+        // Nombres capturados en el formulario
+        const nombreGerente =
+            document.getElementById(
+                "nombreGerenteEnvio"
+            )?.value.trim() || "";
+
+        const nombreJefe =
+            document.getElementById(
+                "nombreJefeEstructurasEnvio"
+            )?.value.trim() || "";
+
+                /*
+            La firma del colaborador que recibe
+            permanece vacía.
+        */
+
+
+        doc.autoTable({
+
+            startY: y,
+
+            margin: {
+                left: margen,
+                right: margen
+            },
+
+            head: [[
+
+                "NOMBRE Y FIRMA DEL GERENTE DEL ÁREA",
+
+                "NOMBRE Y FIRMA DEL COLABORADOR QUE RECIBE",
+
+                "NOMBRE Y FIRMA DEL JEFE DE ESTRUCTURAS METÁLICAS"
+
+            ]],
+
+            body: [[
+
+                "",
+
+                "",
+
+                ""
+
+            ]],
+
+            theme: "grid",
+
+            styles: {
+
+                font:
+                    "Montserrat",
+
+                fontSize:
+                    7,
+
+                textColor:
+                    [0, 0, 0],
+
+                lineColor:
+                    [0, 0, 0],
+
+                lineWidth:
+                    0.25,
+
+                cellPadding:
+                    2,
+
+                halign:
+                    "center",
+
+                valign:
+                    "middle",
+
+                minCellHeight: 25,
+                    
+
+            },
+
+            rowPageBreak: "avoid",
+            pageBreak: "avoid",
+
+            headStyles: {
+
+                fontStyle:
+                    "bold",
+
+                fontSize:
+                    9,
+
+                fillColor:
+                    [255, 255, 255],
+
+                textColor:
+                    [0, 0, 0],
+
+                halign:
+                    "center",
+
+                valign:
+                    "middle"
+
+            },
+
+            columnStyles: {
+
+                0: {
+                    cellWidth: 66
+                },
+
+                1: {
+                    cellWidth: 66
+                },
+
+                2: {
+                    cellWidth: 56
+                }
+
+            },
+
+            didDrawCell: function(data) {
+
+                if (
+                    data.section !== "body" ||
+                    data.row.index !== 0
+                ) {
+                    return;
+                }
+
+                // ==========================================
+                // NOMBRES
+                // ==========================================
+
+                if (
+                    data.column.index === 0 &&
+                    nombreGerente
+                ) {
+
+                    doc.setFont(
+                        "Montserrat",
+                        "normal"
+                    );
+
+                    doc.setFontSize(9);
+
+                    doc.text(
+                        nombreGerente,
+                        data.cell.x +
+                            data.cell.width / 2,
+                        data.cell.y + 7,
+                        {
+                            align: "center"
+                        }
+                    );
+
+                }
+
+
+                if (
+                    data.column.index === 2 &&
+                    nombreJefe
+                ) {
+
+                    doc.setFont(
+                        "Montserrat",
+                        "normal"
+                    );
+
+                    doc.setFontSize(9);
+
+                    doc.text(
+                        nombreJefe,
+                        data.cell.x +
+                            data.cell.width / 2,
+                        data.cell.y + 7,
+                        {
+                            align: "center"
+                        }
+                    );
+
+                }
+
+                // ==========================================
+                // FIRMA GERENTE
+                // ==========================================
+
+                if (
+                    data.column.index === 0 &&
+                    canvasGerente
+                ) {
+
+                    const firmaGerente =
+                        obtenerFirmaRecortada(
+                            canvasGerente
+                        );
+
+                    if (firmaGerente) {
+
+                        doc.addImage(
+                            firmaGerente,
+                            "PNG",
+
+                            data.cell.x + 7,
+                            data.cell.y + 16,
+
+                            data.cell.width - 14,
+                            8
+                        );
+
+                    }
+
+                }
+
+
+                // ==========================================
+                // FIRMA JEFE
+                // ==========================================
+
+                if (
+                    data.column.index === 2 &&
+                    canvasJefe
+                ) {
+
+                    const firmaJefe =
+                        obtenerFirmaRecortada(
+                            canvasJefe
+                        );
+
+                    if (firmaJefe) {
+
+                        doc.addImage(
+                            firmaJefe,
+                            "PNG",
+
+                            data.cell.x + 7,
+                            data.cell.y + 16,
+
+                            data.cell.width - 14,
+                            8
+                        );
+
+                    }
+
+                }
+
+            }
+
+        });
+
+
+        // =====================================================
+        // NÚMERO DE DOCUMENTO
+        // =====================================================
+
+        doc.setFont(
+            "helvetica",
+            "bold"
+        );
+
+        doc.setFontSize(7.5);
+
+        doc.text(
+
+            "Número de documento VNA-ESMT-FM011 REV001",
+
+            anchoPagina / 2,
+
+            altoPagina - 9,
+
+            {
+                align: "center"
+            }
+
+        );
+
+
+        // ==========================================
+        // GENERAR BLOB DEL PDF
+        // ==========================================
+
+        const blob = doc.output("blob");
+
+        // Guardamos el Blob para abrirlo y enviarlo
+        const url = URL.createObjectURL(blob);
+        window.open(url, "_blank");
+
+        // ==========================================
+        // CONVERTIR PDF A BASE64
+        // ==========================================
+
+        const reader = new FileReader();
+
+        reader.onloadend = () => {
+
+            // Solo la parte Base64
+            pdfEnvioBase64 = reader.result.split(",")[1];
+
+            console.log(
+                "✅ PDF convertido a Base64:",
+                pdfEnvioBase64.length
+            );
+        };
+
+        reader.readAsDataURL(blob);
+
+        // Marcamos que ya existe un PDF generado
+        pdfEnvioGenerado = true;
+
+
+        actualizarEstadoBotonEnvio();
+
+
+        console.log(
+            "PDF de envío generado correctamente."
+        );
+
+        
+
+    } catch (error) {
+
+        console.error(
+            "Error al generar PDF de envío:",
+            error
+        );
+
+
+        alert(
+            "No se pudo generar el PDF de envío."
+        );
+
+    }
 
 }

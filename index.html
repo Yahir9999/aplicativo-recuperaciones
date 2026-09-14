@@ -171,17 +171,16 @@
                     <table>
 
                         <thead>
-
                             <tr>
-
                                 <th>#</th>
                                 <th>Folio</th>
                                 <th>Estructura</th>
                                 <th>Cantidad</th>
+                                <th>Tipo</th>
+                                <th>Nuevo / Retorno</th>
+                                <th>Observaciones</th>
                                 <th></th>
-
                             </tr>
-
                         </thead>
 
                         <tbody id="tablaFoliosEnvio">
@@ -377,46 +376,228 @@
 
 
             <!-- =========================
-                EVIDENCIA
+                    DATOS DEL TRANSPORTE
             ========================== -->
+                <section class="card">
 
-            <section class="card">
+                    <h2>Datos de identificación del transporte</h2>
 
-                <h2>Evidencia</h2>
+                    <div class="campo">
+                        <label for="transportePDF">
+                            Transporte
+                        </label>
 
-                <div class="campo">
+                        <input
+                            type="text"
+                            id="transportePDF"
+                            placeholder="Escribe el nombre de la línea de transporte">
+                    </div>
 
-                    <label for="evidenciaEnvio">
-                        Fotografía
-                    </label>
+                    <div class="campo">
+                        <label for="operadorPDF">
+                            Nombre del operador
+                        </label>
 
-                    <input
-                        type="file"
-                        id="evidenciaEnvio"
-                        accept="image/*"
-                        capture="environment">
+                        <input
+                            type="text"
+                            id="operadorPDF"
+                            placeholder="Nombre completo del operador">
+                    </div>
 
-                </div>
+                    <div class="campo">
+                        <label for="placasPDF">
+                            Placas del transporte
+                        </label>
+
+                        <input
+                            type="text"
+                            id="placasPDF"
+                            placeholder="Escribe las placas">
+                    </div>
+
+                    <div class="campo">
+                        <label for="tipoCajaPDF">
+                            Tipo de caja
+                        </label>
+
+                        <input
+                            type="text"
+                            id="tipoCajaPDF"
+                            placeholder="Escribe el tipo de caja">
+                    </div>
+
+                </section>
+
+                <!-- =========================
+                        HORARIOS DEL TRANSPORTE
+                    ========================== -->
+                    <section class="card">
+
+                        <h2>Horarios del transporte</h2>
+
+                        <div class="campo">
+                            <label for="horaLlegadaPDF">
+                                Hora de llegada del transporte
+                            </label>
+
+                            <input
+                                type="time"
+                                id="horaLlegadaPDF">
+                        </div>
+
+                        <div class="campo">
+                            <label for="horaSalidaPDF">
+                                Hora de salida del transporte
+                            </label>
+
+                            <input
+                                type="time"
+                                id="horaSalidaPDF">
+                        </div>
+
+                    </section>
 
 
-                <div
-                    id="previewEvidencia"
-                    class="preview-evidencia oculto">
+                    <!-- =========================
+                            FIRMAS
+                        ========================== -->
+                        <section class="card">
 
-                    <img
-                        id="imagenEvidencia"
-                        alt="Evidencia del envío">
+                            <h2>Firmas</h2>
 
-                </div>
+                            <div class="firmas-envio">
 
-            </section>
+                                <!-- FIRMA GERENTE -->
+                                <div class="firma-envio">
+
+                                    <label for="nombreGerenteEnvio">
+                                        Nombre del gerente del área
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        id="nombreGerenteEnvio"
+                                        placeholder="Nombre completo"
+                                    >
+
+                                    <label>
+                                        Firma del gerente del área
+                                    </label>
+
+                                    <div class="firma-canvas-container">
+                                        
+                                        <canvas
+                                            id="firmaGerente"
+                                            width="500"
+                                            height="180">
+                                        </canvas>
+
+                                    </div>
+
+                                    <button
+                                        type="button"
+                                        class="btn-secondary btn-limpiar-firma"
+                                        data-firma="firmaGerente">
+
+                                        Limpiar firma
+
+                                    </button>
+
+                                </div>
+
+
+                                <!-- FIRMA COLABORADOR QUE RECIBE -->
+                                <div class="firma-envio">
+
+                                    <label>
+                                        Nombre y firma del colaborador que recibe
+                                    </label>
+
+                                    <div
+                                        class="firma-canvas-container">
+
+                                        <canvas
+                                            id="firmaRecibe"
+                                            width="500"
+                                            height="180">
+                                        </canvas>
+
+                                    </div>
+
+                                    <button
+                                        type="button"
+                                        class="btn-secondary btn-limpiar-firma"
+                                        data-firma="firmaRecibe">
+
+                                        Limpiar firma
+
+                                    </button>
+
+                                </div>
+
+
+                    <!-- FIRMA JEFE DE ESTRUCTURAS -->
+                        <div class="firma-envio">
+
+                            <label for="nombreJefeEstructurasEnvio">
+                                Nombre del jefe de estructuras metálicas
+                            </label>
+
+                            <input
+                                type="text"
+                                id="nombreJefeEstructurasEnvio"
+                                placeholder="Nombre completo"
+                            >
+
+                            <label>
+                                Firma del jefe de estructuras metálicas
+                            </label>
+
+                            <div class="firma-canvas-container">
+
+                                <canvas
+                                    id="firmaJefeEstructuras"
+                                    width="500"
+                                    height="180">
+                                </canvas>
+
+                            </div>
+
+                            <button
+                                type="button"
+                                class="btn-secondary btn-limpiar-firma"
+                                data-firma="firmaJefeEstructuras">
+
+                                Limpiar firma
+
+                            </button>
+
+                        </div>
+
+                            </div>
+
+                        </section>
+
 
 
             <!-- =========================
                 ENVIAR
             ========================== -->
 
+            <!-- =========================
+                ACCIONES DEL ENVÍO
+            ========================= -->
+
             <section class="acciones">
+
+                <button
+                    id="btnGenerarPDFEnvio"
+                    class="btn-secondary"
+                    type="button">
+
+                    Generar PDF
+
+                </button>
 
                 <button
                     id="btnEnviarEstructuras"
@@ -452,7 +633,7 @@
 
         
 
-        <!-- MODO CAMARONES -->
+        <!-- MODO CAMARONES SOLO Y GRUPAL -->
 
             <section id="seccionModoCamarones" class="card oculto">
 
@@ -727,9 +908,9 @@
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Estado</th>
+                            <th>Folio</th>
                             <th>Estructura</th>
-                            <th>Serie</th>
+                            <th>Cantidad</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -771,6 +952,7 @@
     <script src="https://unpkg.com/html5-qrcode"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
@@ -785,35 +967,7 @@
 </script>
 
 
-<script>
 
-// Bloquear clic derecho
-document.addEventListener("contextmenu", e => {
-    e.preventDefault();
-});
-
-// Bloquear teclas
-document.addEventListener("keydown", e => {
-
-    if (
-        e.key === "F12" ||
-
-        (e.ctrlKey &&
-         e.shiftKey &&
-         ["I","J","C"].includes(e.key.toUpperCase())) ||
-
-        (e.ctrlKey &&
-         e.key.toUpperCase() === "U")
-    ) {
-
-        e.preventDefault();
-        return false;
-
-    }
-
-});
-
-</script>
 
 
 
