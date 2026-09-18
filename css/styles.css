@@ -744,6 +744,70 @@ select option {
 
 }
 
+/* =====================================================
+   SELECCIÓN DE RECUPERACIÓN
+===================================================== */
+
+.tipo-recuperacion {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.opcion-recuperacion {
+    background: #ffffff;
+    border-radius: 15px;
+    padding: 2rem 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 2px solid transparent;
+}
+
+.opcion-recuperacion:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.opcion-recuperacion:active {
+    transform: scale(0.98);
+}
+
+.icono-recuperacion {
+    display: block;
+    font-size: 4rem;
+    margin-bottom: 0.8rem;
+}
+
+.opcion-recuperacion h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #222;
+}
+
+.opcion-recuperacion p {
+    margin-top: 0.6rem;
+    color: #666;
+    font-size: 0.95rem;
+}
 
 
+/* CELULAR */
 
+@media (max-width: 480px) {
+
+    .tipo-recuperacion {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .opcion-recuperacion {
+        padding: 1.8rem 1rem;
+    }
+
+    .icono-recuperacion {
+        font-size: 3.5rem;
+    }
+
+}

@@ -23,7 +23,7 @@
 
     <img src="iconos/logo.png" alt="Logo">
 
-    <h1>RECUPERACIONES DE ESTRUCTURAS DE METAL</h1>
+    <h1>RECUPERACIONES DE ESTRUCTURAS</h1>
 
     <!-- MENÚ -->
     <div class="menu-container">
@@ -613,9 +613,54 @@
 
         </section>
 
+        <!-- =========================================
+             SELECCIÓN DE TIPO DE RECUPERACIÓN
+        ========================================== -->
+
+        <section id="seccionTipoRecuperacion" class="card">
+
+            <h2>¿Qué vas a recuperar?</h2>
+
+            <div class="tipo-recuperacion">
+
+                <!-- MADERA -->
+                <div
+                    id="btnRecuperacionMadera"
+                    class="opcion-recuperacion">
+
+                    <span class="icono-recuperacion">🪵</span>
+
+                    <h3>MADERA</h3>
+
+                    <p>
+                        Recuperación de estructuras de madera
+                    </p>
+
+                </div>
+
+
+                <!-- METAL -->
+                <div
+                    id="btnRecuperacionMetal"
+                    class="opcion-recuperacion">
+
+                    <span class="icono-recuperacion">🔩</span>
+
+                    <h3>METAL</h3>
+
+                    <p>
+                        Recuperación de estructuras de metal
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
         <!-- DATOS GENERALES -->
 
-        <section id="seccionDatosGenerales" class="card">
+        <section id="seccionDatosGenerales" class="card oculto">
 
             <div class="campo">
                 <label>Fecha</label>
@@ -709,7 +754,7 @@
 
              <!-- TIPO DE CAPTURA -->
 
-        <section id="seccionTipoCaptura" class="card">
+        <section id="seccionTipoCaptura" class="card oculto">
 
             <h2>Tipo de Captura</h2>
 
@@ -878,7 +923,7 @@
 
         <!-- CONTADOR -->
 
-        <section id="seccionContador" class="card">
+        <section id="seccionContador" class="card oculto">
 
             <h2>Piezas Capturadas</h2>
 
@@ -897,7 +942,7 @@
 
         <!-- TABLA -->
 
-        <section id="seccionTabla" class="card">
+        <section id="seccionTabla" class="card oculto">
 
             <h2>Registros Capturados</h2>
 
@@ -927,7 +972,7 @@
 
         <!-- ACCIONES -->
 
-        <section id="seccionAcciones" class="acciones">
+        <section id="seccionAcciones" class="acciones oculto">
 
             <button
                 id="btnRegistrar"
@@ -959,6 +1004,7 @@
 
     <script src="js/scanner.js?v=24"></script>
     <script src="js/app.js?v=24"></script>
+    <script src="js/madera.js?v=1"></script>
 
     <script>
     if ("serviceWorker" in navigator) {
