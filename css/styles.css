@@ -811,3 +811,154 @@ select option {
     }
 
 }
+
+/* =====================================================
+   OCULTAR MENÚ SUPERIOR
+===================================================== */
+
+.menu-container {
+    display: none !important;
+}
+
+/* =====================================================
+   SELECCIÓN DE TIPO DE RECUPERACIÓN
+===================================================== */
+
+#seccionTipoRecuperacion {
+    text-align: center;
+    padding: 1.5rem;
+}
+
+#seccionTipoRecuperacion h2 {
+    text-align: center;
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    color: #374151;
+}
+
+
+/* CONTENEDOR */
+
+.tipo-recuperacion {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+
+/* TARJETA */
+
+.opcion-recuperacion {
+    background: #ffffff;
+    border: 2px solid transparent;
+    border-radius: 15px;
+    padding: 1.5rem 1rem;
+    text-align: center;
+    cursor: pointer;
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease,
+        border-color .2s ease;
+}
+
+.opcion-recuperacion:hover {
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 6px 18px rgba(0, 0, 0, .15);
+
+    border-color: #d1d5db;
+}
+
+.opcion-recuperacion:active {
+    transform: scale(.98);
+}
+
+
+/* IMAGEN */
+
+.imagen-recuperacion {
+    width: 100%;
+    height: 180px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-bottom: 1rem;
+}
+
+.imagen-recuperacion img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: contain;
+}
+
+
+/* TÍTULO */
+
+.opcion-recuperacion h3 {
+    margin: 0;
+
+    font-size: 1.5rem;
+    font-weight: 700;
+
+    color: #222222;
+}
+
+
+/* DESCRIPCIÓN */
+
+.opcion-recuperacion p {
+    margin-top: .6rem;
+
+    font-size: .95rem;
+
+    color: #666666;
+}
+
+
+/* =====================================================
+   OCULTAR MENÚ
+===================================================== */
+
+.menu-container {
+    display: none !important;
+}
+
+
+/* =====================================================
+   CELULAR
+===================================================== */
+
+@media (max-width: 480px) {
+
+    #seccionTipoRecuperacion {
+        padding: 1.25rem;
+    }
+
+    #seccionTipoRecuperacion h2 {
+        font-size: 1.35rem;
+        text-align: center;
+    }
+
+    .tipo-recuperacion {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .opcion-recuperacion {
+        padding: 1.5rem 1rem;
+    }
+
+    .imagen-recuperacion {
+        height: 170px;
+    }
+
+    .opcion-recuperacion h3 {
+        font-size: 1.4rem;
+    }
+
+}

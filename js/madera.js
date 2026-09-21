@@ -1,5 +1,5 @@
 // =====================================================
-// MÓDULO DE RECUPERACIONES DE MADERA
+// RECUPERACIONES DE MADERA
 // =====================================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -11,29 +11,36 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("btnRecuperacionMetal");
 
 
-    // =========================================
-    // MADERA
-    // =========================================
+    // ==============================================
+    // OCULTAR FLUJO DE METAL AL INICIAR
+    // ==============================================
+
+    ocultarFlujoMetal();
+
+
+    // ==============================================
+    // BOTÓN MADERA
+    // ==============================================
 
     if (btnMadera) {
 
         btnMadera.addEventListener(
             "click",
-            iniciarRecuperacionMadera
+            iniciarMadera
         );
 
     }
 
 
-    // =========================================
-    // METAL
-    // =========================================
+    // ==============================================
+    // BOTÓN METAL
+    // ==============================================
 
     if (btnMetal) {
 
         btnMetal.addEventListener(
             "click",
-            iniciarRecuperacionMetal
+            iniciarMetal
         );
 
     }
@@ -42,41 +49,158 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 // =====================================================
-// INICIAR MADERA
+// OCULTAR FLUJO METAL
 // =====================================================
 
-function iniciarRecuperacionMadera() {
+function ocultarFlujoMetal() {
 
-    console.log("🪵 Recuperación de MADERA");
+    const seccionesMetal = [
 
-    document
-        .getElementById("seccionTipoRecuperacion")
-        .classList.add("oculto");
+        "seccionDatosGenerales",
+        "seccionModoCamarones",
+        "seccionAuxiliar",
+        "seccionFolioGrupal",
+        "seccionTipoCaptura",
+        "seccionBuenEstado",
+        "seccionDanada",
+        "scannerContainer",
+        "seccionContador",
+        "seccionTabla",
+        "seccionAcciones"
 
-    // Por ahora no mostramos nada más.
-    // Aquí construiremos el flujo de MADERA.
+    ];
+
+
+    seccionesMetal.forEach(id => {
+
+        const elemento =
+            document.getElementById(id);
+
+        if (elemento) {
+
+            elemento.classList.add("oculto");
+
+        }
+
+    });
 
 }
 
 
 // =====================================================
-// INICIAR METAL
+// MOSTRAR SELECCIÓN
 // =====================================================
 
-function iniciarRecuperacionMetal() {
+function mostrarSeleccionRecuperacion() {
 
-    console.log("🔩 Recuperación de METAL");
+    const seleccion =
+        document.getElementById(
+            "seccionTipoRecuperacion"
+        );
+
+    if (seleccion) {
+
+        seleccion.classList.remove("oculto");
+
+    }
+
+}
+
+
+// =====================================================
+// MADERA
+// =====================================================
+
+function iniciarMadera() {
+
+    console.log(
+        "🪵 Iniciando recuperación de MADERA"
+    );
+
+
+    // Ocultar selección
 
     document
-        .getElementById("seccionTipoRecuperacion")
+        .getElementById(
+            "seccionTipoRecuperacion"
+        )
         .classList.add("oculto");
 
+
+    // Ocultar todo METAL
+
+    ocultarFlujoMetal();
+
+
+    // Cambiar título
+
+    const titulo =
+        document.querySelector(
+            ".app-header h1"
+        );
+
+    if (titulo) {
+
+        titulo.textContent =
+            "RECUPERACIONES DE ESTRUCTURAS DE MADERA";
+
+    }
+
+
+    // ==========================================
+    // AQUÍ COMENZARÁ EL FLUJO DE MADERA
+    // ==========================================
+
+}
+
+
+// =====================================================
+// METAL
+// =====================================================
+
+function iniciarMetal() {
+
+    console.log(
+        "🔩 Iniciando recuperación de METAL"
+    );
+
+
+    // Ocultar selección
+
+    document
+        .getElementById(
+            "seccionTipoRecuperacion"
+        )
+        .classList.add("oculto");
+
+
+    // Cambiar título
+
+    const titulo =
+        document.querySelector(
+            ".app-header h1"
+        );
+
+    if (titulo) {
+
+        titulo.textContent =
+            "RECUPERACIONES DE ESTRUCTURAS DE METAL";
+
+    }
+
+
+    // Mostrar datos generales
+
     const datosGenerales =
-        document.getElementById("seccionDatosGenerales");
+        document.getElementById(
+            "seccionDatosGenerales"
+        );
 
     if (datosGenerales) {
 
-        datosGenerales.classList.remove("oculto");
+        datosGenerales.classList.remove(
+            "oculto"
+        );
 
     }
 
