@@ -383,6 +383,7 @@ select option {
     top: 5px;
     right: 0;
     z-index: 1000;
+    display: block;
 }
 
 .btn-menu {
@@ -408,6 +409,37 @@ select option {
 
 .btn-menu:hover {
     background: #eeeeee;
+}
+
+.menu-opciones {
+    position: absolute;
+    top: 48px;
+    right: 0;
+
+    width: 220px;
+
+    background: #ffffff;
+    border-radius: 12px;
+
+    box-shadow: 0 5px 20px rgba(0,0,0,.25);
+
+    padding: .5rem;
+    z-index: 2000;
+}
+
+.menu-opciones button {
+    width: 100%;
+    background: transparent;
+    color: #222;
+    text-align: left;
+    padding: .9rem;
+    border-radius: 8px;
+    font-size: .95rem;
+    font-weight: 600;
+}
+
+.menu-opciones button:hover {
+    background: #f1f1f1;
 }
 
 
@@ -812,13 +844,7 @@ select option {
 
 }
 
-/* =====================================================
-   OCULTAR MENÚ SUPERIOR
-===================================================== */
 
-.menu-container {
-    display: none !important;
-}
 
 /* =====================================================
    SELECCIÓN DE TIPO DE RECUPERACIÓN

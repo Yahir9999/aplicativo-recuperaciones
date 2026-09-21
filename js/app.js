@@ -1892,7 +1892,7 @@ if (btnEnvioEstructuras) {
 }
 
 
-function abrirEnvioEstructuras() {
+async function abrirEnvioEstructuras() {
 
     /*
         Cerrar menú
@@ -1956,7 +1956,7 @@ function abrirEnvioEstructuras() {
         Cargar CEDIS
     */
 
-    cargarCedisEnvio();
+    await cargarCedisEnvio();
 
 
     /*
@@ -2062,35 +2062,73 @@ function regresarRecuperaciones() {
    CARGAR CEDIS EN ENVÍO
 ===================================================== */
 
-function cargarCedisEnvio() {
+async function cargarCedisEnvio() {
 
     const select =
         document.getElementById(
             "envioCedi"
         );
 
-
     if (!select) return;
 
+
+    /* ==========================================
+       SI LOS CATÁLOGOS TODAVÍA NO CARGARON,
+       LOS CARGAMOS AHORA
+    ========================================== */
+
+    if (
+        !catalogos ||
+        !catalogos.cedis ||
+        catalogos.cedis.length === 0
+    ) {
+
+        try {
+
+            await cargarCatalogos();
+
+        } catch (error) {
+
+            console.error(
+                "Error cargando catálogos para envío:",
+                error
+            );
+
+        }
+
+    }
+
+
+    /* ==========================================
+       LIMPIAR SELECT
+    ========================================== */
 
     select.innerHTML =
         '<option value="">Seleccionar</option>';
 
 
-    /*
-        Utilizamos el mismo catálogo
-        que ya carga el aplicativo
-    */
+    /* ==========================================
+       VERIFICAR CATÁLOGO
+    ========================================== */
 
     if (
         !catalogos ||
-        !catalogos.cedis
+        !catalogos.cedis ||
+        catalogos.cedis.length === 0
     ) {
+
+        console.warn(
+            "⚠ No hay CEDIS disponibles."
+        );
 
         return;
 
     }
 
+
+    /* ==========================================
+       LLENAR CEDIS
+    ========================================== */
 
     catalogos.cedis.forEach(
         cedi => {
@@ -2103,11 +2141,15 @@ function cargarCedisEnvio() {
                     "option"
                 );
 
-            option.value = nombre;
+            option.value =
+                nombre;
 
-            option.textContent = nombre;
+            option.textContent =
+                nombre;
 
-            select.appendChild(option);
+            select.appendChild(
+                option
+            );
 
         }
     );
