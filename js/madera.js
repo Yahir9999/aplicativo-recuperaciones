@@ -186,6 +186,16 @@ function iniciarMadera() {
             "RECUPERACIONES DE ESTRUCTURAS DE MADERA";
     }
 
+        // Ocultar formulario de captura hasta completar datos generales
+    const formularioCompleta =
+        document.getElementById(
+            "seccionCapturaCompletaMadera"
+        );
+
+    if (formularioCompleta) {
+        formularioCompleta.classList.add("oculto");
+    }
+
     // Mostrar formulario MADERA
     const datosMadera =
         document.getElementById(
@@ -307,9 +317,47 @@ document.addEventListener(
 
         }
 
+        if (
+            event.target.id === "fechaMadera" ||
+            event.target.id === "cediMadera" ||
+            event.target.id === "recuperadorMadera"
+        ) {
+
+            verificarDatosGeneralesMadera();
+
+        }
+
+        if (
+            event.target.id ===
+            "tipoEstructuraMadera" ||
+            event.target.id ===
+            "cantidadEstructuraMadera"
+        ) {
+
+            calcularPiezasMaderaCompleta();
+
+        }
+
     }
 );
 
+
+
+document.addEventListener(
+    "input",
+    event => {
+
+        if (
+            event.target.id ===
+            "cantidadEstructuraMadera"
+        ) {
+
+            calcularPiezasMaderaCompleta();
+
+        }
+
+    }
+);
 
 // =====================================================
 // CARGAR RECUPERADORES MADERA
@@ -372,6 +420,58 @@ function cargarRecuperadoresMadera() {
         selectRecuperador.appendChild(option);
 
     });
+
+}
+
+// =====================================================
+// VALIDAR DATOS GENERALES MADERA
+// =====================================================
+
+function verificarDatosGeneralesMadera() {
+
+    const fecha =
+        document.getElementById("fechaMadera");
+
+    const cedi =
+        document.getElementById("cediMadera");
+
+    const recuperador =
+        document.getElementById("recuperadorMadera");
+
+    const formularioCompleta =
+        document.getElementById(
+            "seccionCapturaCompletaMadera"
+        );
+
+    if (
+        !fecha ||
+        !cedi ||
+        !recuperador ||
+        !formularioCompleta
+    ) {
+        return;
+    }
+
+    const datosCompletos =
+        fecha.value &&
+        cedi.value &&
+        recuperador.value;
+
+    if (datosCompletos) {
+
+        formularioCompleta.classList.remove(
+            "oculto"
+        );
+
+        cargarTiposEstructuraMadera();
+
+    } else {
+
+        formularioCompleta.classList.add(
+            "oculto"
+        );
+
+    }
 
 }
 
@@ -544,3 +644,466 @@ document.addEventListener(
 
     }
 );
+
+
+
+// =====================================================
+// CARGAR TIPOS DE ESTRUCTURA MADERA
+// =====================================================
+
+function cargarTiposEstructuraMadera() {
+
+    const select =
+        document.getElementById(
+            "tipoEstructuraMadera"
+        );
+
+    if (!select) {
+        return;
+    }
+
+    select.innerHTML =
+        '<option value="">Seleccionar</option>';
+
+    catalogosMadera.estructuras.forEach(
+        estructura => {
+
+            const tipo =
+                estructura[0];
+
+            if (!tipo) {
+                return;
+            }
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+            option.value = tipo;
+            option.textContent = tipo;
+
+            select.appendChild(option);
+
+        }
+    );
+
+}
+
+// =====================================================
+// CALCULAR PIEZAS MADERA COMPLETA
+// =====================================================
+
+function calcularPiezasMaderaCompleta() {
+
+    const tipo =
+        document.getElementById(
+            "tipoEstructuraMadera"
+        ).value;
+
+    const cantidad =
+        Number(
+            document.getElementById(
+                "cantidadEstructuraMadera"
+            ).value
+        );
+
+    const resumen =
+        document.getElementById(
+            "resumenCompletaMadera"
+        );
+
+    if (
+        !tipo ||
+        !cantidad ||
+        cantidad < 1
+    ) {
+
+        if (resumen) {
+            resumen.classList.add(
+                "oculto"
+            );
+        }
+
+        return;
+    }
+
+    const estructura =
+        catalogosMadera.estructuras.find(
+            fila =>
+                String(fila[0]).trim() ===
+                String(tipo).trim()
+        );
+
+    if (!estructura) {
+        return;
+    }
+
+    /*
+        CATALOGO MADERA:
+
+        [0] Tipo
+        [1] Base
+        [2] Tapa
+        [3] Esquinero
+        [4] Ángulo
+        [5] Diagonal
+        [6] Poste
+    */
+
+    const base =
+        Number(estructura[1]) * cantidad;
+
+    const tapa =
+        Number(estructura[2]) * cantidad;
+
+    const esquinero =
+        Number(estructura[3]) * cantidad;
+
+    const angulo =
+        Number(estructura[4]) * cantidad;
+
+    const diagonal =
+        Number(estructura[5]) * cantidad;
+
+    const poste =
+        Number(estructura[6]) * cantidad;
+
+
+    document.getElementById(
+        "totalBaseMadera"
+    ).textContent = base;
+
+    document.getElementById(
+        "totalTapaMadera"
+    ).textContent = tapa;
+
+    document.getElementById(
+        "totalEsquineroMadera"
+    ).textContent = esquinero;
+
+    document.getElementById(
+        "totalAnguloMadera"
+    ).textContent = angulo;
+
+    document.getElementById(
+        "totalDiagonalMadera"
+    ).textContent = diagonal;
+
+    document.getElementById(
+        "totalPosteMadera"
+    ).textContent = poste;
+
+
+    if (resumen) {
+
+        resumen.classList.remove(
+            "oculto"
+        );
+
+    }
+
+}
+
+// =====================================================
+// GUARDAR RECUPERACIÓN DE MADERA
+// =====================================================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        const btnGuardar =
+            document.getElementById(
+                "btnGuardarMadera"
+            );
+
+        if (btnGuardar) {
+
+            btnGuardar.addEventListener(
+                "click",
+                guardarMadera
+            );
+
+        }
+
+    }
+);
+
+async function guardarMadera() {
+
+    const fecha =
+        document.getElementById(
+            "fechaMadera"
+        ).value;
+
+    const cedi =
+        document.getElementById(
+            "cediMadera"
+        ).value;
+
+    const auxiliar =
+        document.getElementById(
+            "recuperadorMadera"
+        ).value;
+
+    const tipoEstructura =
+        document.getElementById(
+            "tipoEstructuraMadera"
+        ).value;
+
+    const cantidad =
+        Number(
+            document.getElementById(
+                "cantidadEstructuraMadera"
+            ).value
+        );
+
+    const base =
+        Number(
+            document.getElementById(
+                "totalBaseMadera"
+            ).textContent
+        ) || 0;
+
+    const tapa =
+        Number(
+            document.getElementById(
+                "totalTapaMadera"
+            ).textContent
+        ) || 0;
+
+    const esquinero =
+        Number(
+            document.getElementById(
+                "totalEsquineroMadera"
+            ).textContent
+        ) || 0;
+
+    const angulo =
+        Number(
+            document.getElementById(
+                "totalAnguloMadera"
+            ).textContent
+        ) || 0;
+
+    const diagonal =
+        Number(
+            document.getElementById(
+                "totalDiagonalMadera"
+            ).textContent
+        ) || 0;
+
+    const poste =
+        Number(
+            document.getElementById(
+                "totalPosteMadera"
+            ).textContent
+        ) || 0;
+
+
+    // =================================================
+    // VALIDACIONES
+    // =================================================
+
+    if (!fecha) {
+
+        alert(
+            "Selecciona una fecha."
+        );
+
+        return;
+
+    }
+
+    if (!cedi) {
+
+        alert(
+            "Selecciona un CEDI."
+        );
+
+        return;
+
+    }
+
+    if (!auxiliar) {
+
+        alert(
+            "Selecciona un auxiliar."
+        );
+
+        return;
+
+    }
+
+    if (!tipoEstructura) {
+
+        alert(
+            "Selecciona el tipo de estructura."
+        );
+
+        return;
+
+    }
+
+    if (!cantidad || cantidad < 1) {
+
+        alert(
+            "Ingresa una cantidad válida."
+        );
+
+        return;
+
+    }
+
+
+    // =================================================
+    // BOTÓN
+    // =================================================
+
+    const boton =
+        document.getElementById(
+            "btnGuardarMadera"
+        );
+
+    boton.disabled = true;
+
+    boton.textContent =
+        "GUARDANDO...";
+
+
+    // =================================================
+    // DATOS
+    // =================================================
+
+    const datos = {
+
+        tipoOperacion:
+            "RECUPERACION_MADERA",
+
+        fecha,
+        cedi,
+        auxiliar,
+        tipoEstructura,
+        cantidad,
+
+        base,
+        tapa,
+        esquinero,
+        angulo,
+        diagonal,
+        poste
+
+    };
+
+
+    console.log(
+        "🪵 ENVIANDO MADERA:",
+        datos
+    );
+
+
+    // =================================================
+    // ENVIAR A APPS SCRIPT
+    // =================================================
+
+    try {
+
+        const response =
+            await fetch(
+                URL_API_MADERA,
+                {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "text/plain;charset=utf-8"
+
+                    },
+
+                    body:
+                        JSON.stringify(
+                            datos
+                        )
+
+                }
+            );
+
+
+        const resultado =
+            await response.json();
+
+
+        console.log(
+            "🪵 RESPUESTA MADERA:",
+            resultado
+        );
+
+
+        // =============================================
+        // ERROR
+        // =============================================
+
+        if (!resultado.success) {
+    throw new Error(
+        resultado.mensaje || "No se pudo guardar la recuperación."
+    );
+}
+
+alert("✅ Recuperación de MADERA guardada correctamente.");
+
+// ==========================================
+// LIMPIAR FORMULARIO PARA NUEVO REGISTRO
+// ==========================================
+
+// Limpiar tipo de estructura
+const selectTipo = document.getElementById("tipoEstructuraMadera");
+if (selectTipo) {
+    selectTipo.value = "";
+}
+
+// Regresar cantidad a 1
+const inputCantidad = document.getElementById("cantidadEstructuraMadera");
+if (inputCantidad) {
+    inputCantidad.value = 1;
+}
+
+// Ocultar resumen de piezas
+const resumen = document.getElementById("resumenCompletaMadera");
+if (resumen) {
+    resumen.classList.add("oculto");
+}
+
+// Reiniciar valores visuales de piezas
+document.getElementById("totalBaseMadera").textContent = "0";
+document.getElementById("totalTapaMadera").textContent = "0";
+document.getElementById("totalEsquineroMadera").textContent = "0";
+document.getElementById("totalAnguloMadera").textContent = "0";
+document.getElementById("totalDiagonalMadera").textContent = "0";
+document.getElementById("totalPosteMadera").textContent = "0";
+
+    } catch (error) {
+
+        console.error(
+            "❌ Error al guardar MADERA:",
+            error
+        );
+
+        alert(
+            "❌ No se pudo guardar la recuperación.\n\n" +
+            error.message
+        );
+
+
+    } finally {
+
+        boton.disabled = false;
+
+        boton.textContent =
+            "GUARDAR RECUPERACIÓN";
+
+    }
+
+}

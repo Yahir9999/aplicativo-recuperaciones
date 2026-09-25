@@ -6,6 +6,7 @@
     <title>Recuperaciones</title>
 
     <link rel="stylesheet" href="css/styles.css?v=20">
+    <link rel="stylesheet" href="css/madera.css?v=1">
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#000000">
@@ -733,6 +734,112 @@
                     </option>
                 </select>
             </div>
+
+        </section>
+
+
+
+
+        <!-- =====================================================
+            MADERA COMPLETA
+        ===================================================== -->
+
+        <section
+            id="seccionCapturaCompletaMadera"
+            class="card oculto">
+
+            <h2>Registro de estructura completa</h2>
+
+            <div class="campo">
+
+                <label for="tipoEstructuraMadera">
+                    Tipo de estructura
+                </label>
+
+                <select id="tipoEstructuraMadera">
+
+                    <option value="">
+                        Seleccionar
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div class="campo">
+
+                <label for="cantidadEstructuraMadera">
+                    Cantidad de estructuras
+                </label>
+
+                <input
+                    type="number"
+                    id="cantidadEstructuraMadera"
+                    min="1"
+                    step="1"
+                    value="1">
+
+            </div>
+
+
+            <!-- RESUMEN -->
+
+            <div
+                id="resumenCompletaMadera"
+                class="oculto">
+
+                <h3>
+                    Piezas recuperadas
+                </h3>
+
+                <div class="resumen-piezas">
+
+                    <p>
+                        <strong>Base:</strong>
+                        <span id="totalBaseMadera">0</span>
+                    </p>
+
+                    <p>
+                        <strong>Tapa:</strong>
+                        <span id="totalTapaMadera">0</span>
+                    </p>
+
+                    <p>
+                        <strong>Esquinero:</strong>
+                        <span id="totalEsquineroMadera">0</span>
+                    </p>
+
+                    <p>
+                        <strong>Ángulo:</strong>
+                        <span id="totalAnguloMadera">0</span>
+                    </p>
+
+                    <p>
+                        <strong>Diagonal:</strong>
+                        <span id="totalDiagonalMadera">0</span>
+                    </p>
+
+                    <p>
+                        <strong>Poste:</strong>
+                        <span id="totalPosteMadera">0</span>
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="acciones-madera">
+
+                <button
+                    type="button"
+                    id="btnGuardarMadera"
+                    class="btn-principal">
+                    GUARDAR RECUPERACIÓN
+                </button>
+
+            </div>
+
+
 
         </section>
 
