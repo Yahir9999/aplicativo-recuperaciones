@@ -3362,11 +3362,10 @@ function actualizarEstadoBotonEnvio() {
     */
 
     boton.disabled =
-        !cedi ||
-        !fecha ||
-        foliosEnvio.length === 0 ||
-        !marchamo ||
-        !pdfEnvioGenerado;
+    !cedi ||
+    !fecha ||
+    foliosEnvio.length === 0 ||
+    !marchamo;
 }
 
 
@@ -3831,32 +3830,43 @@ async function enviarEstructuras() {
 
     }
 
-    if (!pdfEnvioGenerado || !pdfEnvioBase64) {
-
-    alert(
-        "Primero debes generar el PDF del envío."
-    );
-
-    return;
-
-}
-
-
-
-
     const boton =
         document.getElementById(
             "btnEnviarEstructuras"
         );
 
 
+            boton.disabled = true;
+
+boton.textContent =
+    "GENERANDO PDF...";
+
+try {
+
+    // ==========================================
+    // GENERAR PDF
+    // ==========================================
+
+    const pdfGenerado =
+        await generarPDFEnvio();
+
+    if (
+        !pdfGenerado ||
+        !pdfEnvioBase64
+    ) {
+
+        throw new Error(
+            "No se pudo generar el PDF del envío."
+        );
+
+    }
+
+    // Evitar que el botón se reactive
+    // mientras se realiza el envío
     boton.disabled = true;
 
     boton.textContent =
         "ENVIANDO...";
-
-
-    try {
 
         
 
@@ -3998,16 +4008,14 @@ async function enviarEstructuras() {
         );
 
 
-    } finally {
+            } finally {
 
-        boton.disabled = false;
+            boton.textContent =
+                "📄 ENVIAR Y GENERAR PDF";
 
-        boton.textContent =
-            "ENVIAR";
+            actualizarEstadoBotonEnvio();
 
-        actualizarEstadoBotonEnvio();
-
-    }
+        }
 
 }
 
@@ -5245,45 +5253,46 @@ async function generarPDFEnvio() {
         );
 
 
-        // ==========================================
         // GENERAR BLOB DEL PDF
-        // ==========================================
+            const blob = doc.output("blob");
 
-        const blob = doc.output("blob");
+            // Abrir vista previa del PDF
+            const url = URL.createObjectURL(blob);
+            window.open(url, "_blank");
 
-        // Guardamos el Blob para abrirlo y enviarlo
-        const url = URL.createObjectURL(blob);
-        window.open(url, "_blank");
+            // CONVERTIR PDF A BASE64
+            const reader = new FileReader();
 
-        // ==========================================
-        // CONVERTIR PDF A BASE64
-        // ==========================================
+            await new Promise((resolve, reject) => {
 
-        const reader = new FileReader();
+                reader.onloadend = () => {
 
-        reader.onloadend = () => {
+                    pdfEnvioBase64 =
+                        reader.result.split(",")[1];
 
-            // Solo la parte Base64
-            pdfEnvioBase64 = reader.result.split(",")[1];
+                    console.log(
+                        "✅ PDF convertido a Base64:",
+                        pdfEnvioBase64.length
+                    );
+
+                    resolve();
+                };
+
+                reader.onerror = reject;
+
+                reader.readAsDataURL(blob);
+            });
+
+            // Marcamos que ya existe un PDF generado
+            pdfEnvioGenerado = true;
+
+            actualizarEstadoBotonEnvio();
 
             console.log(
-                "✅ PDF convertido a Base64:",
-                pdfEnvioBase64.length
+                "PDF de envío generado correctamente."
             );
-        };
 
-        reader.readAsDataURL(blob);
-
-        // Marcamos que ya existe un PDF generado
-        pdfEnvioGenerado = true;
-
-
-        actualizarEstadoBotonEnvio();
-
-
-        console.log(
-            "PDF de envío generado correctamente."
-        );
+            return true;
 
         
 
