@@ -660,6 +660,15 @@
 
         <section id="seccionDatosGenerales" class="card oculto">
 
+            <button
+                id="btnRegresarInicioMetal"
+                class="btn-regresar"
+                type="button">
+
+                ← Regresar
+
+            </button>
+
             <div class="campo">
                 <label>Fecha</label>
                 <input type="date" id="fecha">
@@ -669,6 +678,59 @@
                 <label>CEDI</label>
                 <select id="cedi">
                     <option value="">Seleccionar</option>
+                </select>
+            </div>
+
+        </section>
+
+        <!-- =====================================================
+            DATOS GENERALES MADERA
+        ===================================================== -->
+
+        <section id="seccionDatosMadera" class="card oculto">
+
+            <button
+                id="btnRegresarInicioMadera"
+                class="btn-regresar"
+                type="button">
+
+                ← Regresar
+
+            </button>
+
+            <h2>Datos de la recuperación</h2>
+
+            <div class="campo">
+                <label for="fechaMadera">
+                    Fecha
+                </label>
+
+                <input
+                    type="date"
+                    id="fechaMadera">
+            </div>
+
+            <div class="campo">
+                <label for="cediMadera">
+                    CEDI
+                </label>
+
+                <select id="cediMadera">
+                    <option value="">
+                        Seleccionar
+                    </option>
+                </select>
+            </div>
+
+            <div class="campo">
+                <label for="recuperadorMadera">
+                    Recuperador
+                </label>
+
+                <select id="recuperadorMadera">
+                    <option value="">
+                        Seleccionar
+                    </option>
                 </select>
             </div>
 
@@ -1002,7 +1064,7 @@
 
     <script src="js/scanner.js?v=24"></script>
     <script src="js/app.js?v=24"></script>
-    <script src="js/madera.js?v=1"></script>
+    <script src="js/madera.js?v=2"></script>
 
     <script>
     if ("serviceWorker" in navigator) {
