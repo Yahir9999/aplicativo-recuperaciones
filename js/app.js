@@ -2960,11 +2960,12 @@ function renderizarFoliosEnvio() {
 
                 <td>
                     <input
-                    type="text"
-                    class="observaciones-envio"
-                    data-index="${index}"
-                    value="${item.observaciones || ""}"
-                    placeholder="Observaciones">
+                        type="text"
+                        class="observaciones-envio"
+                        data-index="${index}"
+                        value="${item.observaciones || ""}"
+                        placeholder="Observaciones"
+                        list="opcionesObservacionesEnvio">
                 </td>
 
                 <td>
