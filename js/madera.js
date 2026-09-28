@@ -183,7 +183,7 @@ function iniciarMadera() {
 
     if (titulo) {
         titulo.textContent =
-            "RECUPERACIONES DE ESTRUCTURAS DE MADERA";
+            "RECUPERACIÓN DE ESTRUCTURAS DE MADERA";
     }
 
         // Ocultar formulario de captura hasta completar datos generales
