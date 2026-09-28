@@ -508,7 +508,7 @@ function iniciarMetal() {
     if (titulo) {
 
         titulo.textContent =
-            "RECUPERACIONES DE ESTRUCTURAS DE METAL";
+            "RECUPERACIÓN DE ESTRUCTURAS DE METAL";
 
     }
 
