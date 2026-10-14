@@ -250,25 +250,33 @@ function mostrarSecciones(...ids) {
 
 }
 
-//funcion UNICAMENTE PARA CAMARONES
+
 function verificarModoCamarones() {
 
-    const cedi =
-        document.getElementById("cedi").value;
+    const cedi = document
+        .getElementById("cedi")
+        .value
+        .trim()
+        .toUpperCase();
 
-    const esCamarones =
-        cedi === "CAMARONES";
+    // CEDIS que permiten registro individual o grupal
+    const permiteModoGrupal = [
+        "CAMARONES",
+        "GUADALAJARA"
+    ].includes(cedi);
 
     ocultarTodasLasSecciones();
 
-    if (esCamarones) {
+    if (permiteModoGrupal) {
 
+        // Mostrar selección de tipo de registro
         mostrarSecciones(
             "seccionModoCamarones"
         );
 
     } else {
 
+        // Mantener el flujo habitual para los demás CEDIS
         mostrarSecciones(
             "seccionAuxiliar",
             "seccionTipoCaptura",
@@ -285,6 +293,7 @@ function verificarModoCamarones() {
     }
 
 }
+
 
 
 function seleccionarRegistroAuxiliar() {
