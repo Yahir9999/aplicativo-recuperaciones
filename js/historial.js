@@ -270,13 +270,14 @@ function llenarCedisHistorial() {
 
     if (!selectCedi || !selectRecuperador) return;
 
+    // Conservar las selecciones actuales
+    const cediAnterior = selectCedi.value;
+    const recuperadorAnterior = selectRecuperador.value;
+
     const catalogos = obtenerCatalogosTipoHistorial();
 
     selectCedi.innerHTML =
         '<option value="">Seleccionar CEDI</option>';
-
-    selectRecuperador.innerHTML =
-        '<option value="">Todos los recuperadores</option>';
 
     (catalogos.cedis || []).forEach(fila => {
 
@@ -292,6 +293,15 @@ function llenarCedisHistorial() {
         selectCedi.appendChild(opcion);
 
     });
+
+    // Restaurar el CEDI si sigue existiendo
+    selectCedi.value = cediAnterior;
+
+    // Recargar recuperadores del CEDI conservado
+    cargarRecuperadoresHistorial();
+
+    // Restaurar recuperador si sigue disponible
+    selectRecuperador.value = recuperadorAnterior;
 
 }
 
