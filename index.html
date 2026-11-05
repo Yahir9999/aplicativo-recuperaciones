@@ -7,6 +7,7 @@
 
     <link rel="stylesheet" href="css/styles.css?v=20">
     <link rel="stylesheet" href="css/madera.css?v=1">
+    <link rel="stylesheet" href="css/historial.css">
 
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#000000">
@@ -96,7 +97,108 @@
 
     </div>
 
+                <!-- ACCESO AL HISTORIAL -->
+    <div class="acciones historial-acciones">
+        <button
+            id="btnAbrirHistorial"
+            class="btn-secondary"
+            type="button">
+
+            CONSULTAR HISTORIAL
+
+        </button>
+    </div>
 </section>
+
+            <!-- =====================================================
+                HISTORIAL DE RECUPERACIONES
+            ===================================================== -->
+            <section id="seccionHistorial" class="card oculto">
+
+                <button id="btnRegresarHistorial" class="btn-regresar" type="button">
+                    ← Regresar
+                </button>
+
+                <h2 id="tituloTipoHistorial">HISTORIAL DE METAL</h2>
+
+                <!-- TIPO DE HISTORIAL -->
+                <div class="historial-tipos">
+
+                    <button id="btnHistorialMetal" class="btn-secondary activo" type="button">
+                        🔩 HISTORIAL METAL
+                    </button>
+
+                    <button id="btnHistorialMadera" class="btn-secondary" type="button">
+                        🪵 HISTORIAL MADERA
+                    </button>
+
+                </div>
+
+                <!-- FILTROS -->
+                <div class="historial-filtros">
+
+                    <div class="campo">
+                        <label for="historialCedi">CEDI</label>
+                        <select id="historialCedi">
+                            <option value="">Seleccionar CEDI</option>
+                        </select>
+                    </div>
+
+                    <div class="campo">
+                        <label for="historialRecuperador">RECUPERADOR</label>
+                        <select id="historialRecuperador">
+                            <option value="">Todos los recuperadores</option>
+                        </select>
+                    </div>
+
+                    <div class="campo">
+                        <label for="historialFechaInicio">FECHA INICIAL</label>
+                        <input type="date" id="historialFechaInicio">
+                    </div>
+
+                    <div class="campo">
+                        <label for="historialFechaFin">FECHA FINAL</label>
+                        <input type="date" id="historialFechaFin">
+                    </div>
+
+                </div>
+
+                <!-- BOTÓN DE CONSULTA -->
+                <div class="acciones historial-acciones">
+                    <button id="btnConsultarHistorial" class="btn-primary" type="button">
+                        CONSULTAR HISTORIAL
+                    </button>
+                </div>
+
+                <p id="mensajeHistorial" class="historial-mensaje">
+                    Selecciona los filtros para consultar las recuperaciones.
+                </p>
+
+                <!-- TABLA -->
+                <div class="tabla-container historial-tabla">
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>FECHA</th>
+                                <th>TIPO DE ESTRUCTURA</th>
+                                <th>CANTIDAD</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="tablaHistorialRecuperaciones"></tbody>
+
+                        <tfoot>
+                            <tr>
+                                <td colspan="2">TOTAL DE ESTRUCTURAS RECUPERADAS</td>
+                                <td id="totalHistorialRecuperaciones">0</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                </div>
+
+            </section>
 
         <!-- =====================================================
      ENVÍO DE ESTRUCTURAS
@@ -1172,6 +1274,7 @@
     <script src="js/scanner.js?v=24"></script>
     <script src="js/app.js?v=24"></script>
     <script src="js/madera.js?v=2"></script>
+    <script src="js/historial.js?v=1"></script>
 
     <script>
     if ("serviceWorker" in navigator) {
