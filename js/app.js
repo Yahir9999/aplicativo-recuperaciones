@@ -350,6 +350,18 @@ function seleccionarNuevoFolio() {
     modoFolio = "NUEVO";
     folioGrupal = "";
 
+    const estructura =
+        document.getElementById("estructuraBuenEstado");
+
+    // Habilitar y limpiar el selector.
+    estructura.disabled = false;
+    estructura.value = "";
+
+    // Ocultar captura de series hasta validar el folio.
+    document
+        .getElementById("capturaBuenEstado")
+        .classList.add("oculto");
+
     document
         .getElementById("campoFoliosAbiertos")
         .classList.add("oculto");
@@ -358,9 +370,8 @@ function seleccionarNuevoFolio() {
         .getElementById("folioGrupalActual")
         .classList.add("oculto");
 
-    mostrarSecciones(
-        "seccionBuenEstado"
-    );
+    // Mostrar únicamente la sección del selector.
+    mostrarSecciones("seccionBuenEstado");
 
     alert("Selecciona el tipo de estructura para generar el folio.");
 
@@ -402,13 +413,68 @@ async function generarNuevoFolioGrupal() {
         const resultado =
             await response.json();
 
-        if (!resultado.success) {
+        
+                if (!resultado.success) {
+
             alert(resultado.mensaje);
+
+            if (resultado.folioPendiente && resultado.item) {
+
+                modoFolio = "EXISTENTE";
+
+                const campoFolios =
+                    document.getElementById("campoFoliosAbiertos");
+
+                campoFolios.classList.remove("oculto");
+
+                document
+                    .getElementById("seccionBuenEstado")
+                    .classList.add("oculto");
+
+                await cargarFoliosAbiertos();
+
+                const select =
+                    document.getElementById("folioGrupalExistente");
+
+                select.value = resultado.item;
+
+                // Comprobar que el folio se cargó correctamente.
+                if (select.value !== resultado.item) {
+                    alert("No fue posible seleccionar el folio pendiente.");
+                    return;
+                }
+
+                seleccionarFolioGrupal();
+
+                // Asignar la estructura del folio pendiente.
+                const estructura =
+                    document.getElementById("estructuraBuenEstado");
+
+                estructura.value = resultado.estructura;
+                estructura.disabled = true;
+
+                // Mostrar el folio que se está continuando.
+                const divFolio =
+                    document.getElementById("folioGrupalActual");
+
+                divFolio.textContent =
+                    `Continuando folio: ${folioGrupal}`;
+
+                divFolio.classList.remove("oculto");
+
+                actualizarContador();
+            }
+
             return;
         }
 
         folioGrupal =
             resultado.item;
+
+            // Mostrar captura únicamente después de generar el folio.
+            document
+                .getElementById("capturaBuenEstado")
+                .classList.remove("oculto");
 
         const divFolio =
             document.getElementById("folioGrupalActual");
@@ -521,12 +587,18 @@ async function cargarFoliosAbiertos() {
 
 }
 
+
 function seleccionarFolioGrupal() {
 
     folioGrupal =
         document.getElementById("folioGrupalExistente").value;
 
     if (!folioGrupal) return;
+
+    // Mostrar los campos de captura.
+    document
+        .getElementById("capturaBuenEstado")
+        .classList.remove("oculto");
 
     mostrarSecciones(
         "seccionBuenEstado",
@@ -536,7 +608,6 @@ function seleccionarFolioGrupal() {
     );
 
 }
-
 
 
 const opcionesCaptura =
