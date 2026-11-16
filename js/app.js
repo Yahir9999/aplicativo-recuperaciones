@@ -640,6 +640,14 @@ opcionesCaptura.forEach(opcion => {
                 .getElementById('seccionBuenEstado')
                 .classList.remove('oculto');
 
+                if (!esRegistroGrupal) {
+
+    document
+        .getElementById('capturaBuenEstado')
+        .classList.remove('oculto');
+
+}
+
             document
                 .getElementById('seccionDanada')
                 .classList.add('oculto');
