@@ -36,11 +36,15 @@
 
         <div id="menuOpciones" class="menu-opciones oculto">
 
-            <button id="btnEnvioEstructuras" type="button">
-                📦 Envío de estructuras
-            </button>
+    <button id="btnEnvioEstructuras" type="button">
+        📦 Envío de estructuras
+    </button>
 
-        </div>
+    <button id="btnGenerarPDFImpresion" type="button">
+        📄 Generar PDF para impresión
+    </button>
+
+</div>
 
     </div>
 
@@ -755,6 +759,128 @@
                 </button>
 
             </section>
+
+        </section>
+
+        <!-- =====================================================
+            GENERAR PDF PARA IMPRESIÓN - METAL
+        ===================================================== -->
+
+        <section id="seccionPDFImpresion" class="card oculto">
+
+            <button
+                id="btnRegresarPDFImpresion"
+                class="btn-regresar"
+                type="button">
+
+                ← Regresar
+
+            </button>
+
+            <h2>GENERAR PDF PARA IMPRESIÓN</h2>
+
+            <p>
+                Consulta un folio de recuperación de METAL
+                para generar nuevamente su listado en PDF.
+            </p>
+
+            <div class="campo">
+
+                <label for="pdfImpresionCedi">CEDI</label>
+
+                <select id="pdfImpresionCedi">
+                    <option value="">Seleccionar CEDI</option>
+                </select>
+
+            </div>
+
+            <div class="campo">
+
+                <label for="pdfImpresionMes">MES</label>
+
+                <select id="pdfImpresionMes">
+                    <option value="">Seleccionar mes</option>
+                    <option value="ENE">ENERO</option>
+                    <option value="FEB">FEBRERO</option>
+                    <option value="MAR">MARZO</option>
+                    <option value="ABR">ABRIL</option>
+                    <option value="MAY">MAYO</option>
+                    <option value="JUN">JUNIO</option>
+                    <option value="JUL">JULIO</option>
+                    <option value="AGO">AGOSTO</option>
+                    <option value="SEP">SEPTIEMBRE</option>
+                    <option value="OCT">OCTUBRE</option>
+                    <option value="NOV">NOVIEMBRE</option>
+                    <option value="DIC">DICIEMBRE</option>
+                </select>
+
+            </div>
+
+            <div class="campo">
+
+                <label for="pdfImpresionEstructura">
+                    TIPO DE ESTRUCTURA
+                </label>
+
+                <select id="pdfImpresionEstructura">
+                    <option value="">Seleccionar estructura</option>
+                    <option value="G2N">G2N</option>
+                    <option value="G2I">G2C</option>
+                    <option value="G4Y">G4Y</option>
+                    <option value="G4B">G4B</option>
+                    <option value="ATV">ATV</option>
+                </select>
+
+            </div>
+
+            <div class="campo">
+
+                <label for="pdfImpresionFolio">FOLIO</label>
+
+                <input
+                    type="text"
+                    id="pdfImpresionFolio"
+                    placeholder="Escribe o escanea el folio"
+                    autocomplete="off">
+
+                <div
+                    id="sugerenciasPDFImpresion"
+                    class="oculto">
+                </div>
+
+            </div>
+
+            <div class="acciones">
+
+                <button
+                    id="btnBuscarPDFImpresion"
+                    class="btn-primary"
+                    type="button">
+
+                     BUSCAR FOLIO
+
+                </button>
+
+            </div>
+
+            <p id="mensajePDFImpresion" class="historial-mensaje"></p>
+
+            <div id="resultadoPDFImpresion" class="oculto">
+
+                <h3>Información del folio</h3>
+
+                <p id="resumenPDFImpresion"></p>
+
+                <button
+                    id="btnDescargarPDFImpresion"
+                    class="btn-primary"
+                    type="button">
+
+                    GENERAR PDF
+
+                </button>
+
+            </div>
 
         </section>
 

@@ -222,7 +222,8 @@ function ocultarTodasLasSecciones() {
         "scannerContainer",
         "seccionContador",
         "seccionTabla",
-        "seccionAcciones"
+        "seccionAcciones",
+        "seccionPDFImpresion"
 
     ];
 
@@ -1932,6 +1933,9 @@ const menuOpciones =
 const btnEnvioEstructuras =
     document.getElementById("btnEnvioEstructuras");
 
+const btnGenerarPDFImpresion =
+    document.getElementById("btnGenerarPDFImpresion");
+
 
 if (btnMenu) {
 
@@ -1976,6 +1980,563 @@ if (btnEnvioEstructuras) {
         "click",
         abrirEnvioEstructuras
     );
+
+}
+
+/* =====================================================
+   GENERAR PDF PARA IMPRESIÓN
+===================================================== */
+
+if (btnGenerarPDFImpresion) {
+
+    btnGenerarPDFImpresion.addEventListener(
+        "click",
+        abrirPDFImpresion
+    );
+
+}
+
+
+async function abrirPDFImpresion() {
+
+    // Cerrar menú
+    menuOpciones.classList.add("oculto");
+
+    // Detener cualquier escáner activo
+    try {
+
+        detenerScanner();
+
+    } catch (error) {
+
+        console.log(
+            "No había escáner de recuperación activo."
+        );
+
+    }
+
+    // Ocultar las demás secciones
+    ocultarTodasLasSecciones();
+
+    // Mostrar pantalla de impresión
+    document
+        .getElementById("seccionPDFImpresion")
+        .classList.remove("oculto");
+
+    // Cambiar título
+    const titulo =
+        document.querySelector(".app-header h1");
+
+    if (titulo) {
+
+        titulo.textContent =
+            "GENERAR PDF PARA IMPRESIÓN";
+
+    }
+
+    // Cargar CEDIS
+    await cargarCedisPDFImpresion();
+
+    // Limpiar resultados anteriores
+    document.getElementById(
+        "pdfImpresionMes"
+    ).value = "";
+
+    document.getElementById(
+        "pdfImpresionEstructura"
+    ).value = "";
+
+    document.getElementById(
+        "pdfImpresionFolio"
+    ).value = "";
+
+    document.getElementById(
+        "resultadoPDFImpresion"
+    ).classList.add("oculto");
+
+    document.getElementById(
+        "mensajePDFImpresion"
+    ).textContent = "";
+
+}
+
+
+/* =====================================================
+   CARGAR CEDIS PARA IMPRESIÓN
+===================================================== */
+
+async function cargarCedisPDFImpresion() {
+
+    const select =
+        document.getElementById(
+            "pdfImpresionCedi"
+        );
+
+    if (!select) return;
+
+    // Cargar catálogos si todavía no existen
+    if (
+        !catalogos ||
+        !catalogos.cedis ||
+        catalogos.cedis.length === 0
+    ) {
+
+        await cargarCatalogos();
+
+    }
+
+    select.innerHTML =
+        '<option value="">Seleccionar CEDI</option>';
+
+    if (
+        !catalogos ||
+        !catalogos.cedis ||
+        catalogos.cedis.length === 0
+    ) {
+
+        console.warn(
+            "No hay CEDIS disponibles para impresión."
+        );
+
+        return;
+
+    }
+
+    catalogos.cedis.forEach(cedi => {
+
+        const option =
+            document.createElement("option");
+
+        option.value = cedi[0];
+        option.textContent = cedi[0];
+
+        select.appendChild(option);
+
+    });
+
+}
+
+// =====================================================
+// BÚSQUEDA Y SUGERENCIAS DE FOLIOS PARA PDF
+// =====================================================
+
+let consultaFoliosPDF = 0;
+
+
+// Elementos de la pantalla
+const pdfImpresionCedi = document.getElementById(
+    "pdfImpresionCedi"
+);
+
+const pdfImpresionMes = document.getElementById(
+    "pdfImpresionMes"
+);
+
+const pdfImpresionEstructura = document.getElementById(
+    "pdfImpresionEstructura"
+);
+
+const pdfImpresionFolio = document.getElementById(
+    "pdfImpresionFolio"
+);
+
+const sugerenciasPDFImpresion = document.getElementById(
+    "sugerenciasPDFImpresion"
+);
+
+
+// =====================================================
+// BUSCAR REGISTROS DE UN FOLIO PARA IMPRESIÓN
+// =====================================================
+
+const btnBuscarPDFImpresion = document.getElementById(
+    "btnBuscarPDFImpresion"
+);
+
+let registrosSeleccionadosPDF = [];
+
+if (btnBuscarPDFImpresion) {
+    btnBuscarPDFImpresion.addEventListener("click", buscarRegistrosPDFImpresion);
+}
+
+async function buscarRegistrosPDFImpresion() {
+
+    const cedi = pdfImpresionCedi.value;
+    const folio = pdfImpresionFolio.value.trim();
+
+    const mensaje = document.getElementById("mensajePDFImpresion");
+    const resultadoDiv = document.getElementById("resultadoPDFImpresion");
+    const resumen = document.getElementById("resumenPDFImpresion");
+
+    // Ocultar resultados anteriores
+    resultadoDiv.classList.add("oculto");
+    registrosSeleccionadosPDF = [];
+
+    if (!cedi || !folio) {
+        mensaje.textContent = "Selecciona un CEDI e ingresa un folio.";
+        return;
+    }
+
+    mensaje.textContent = "Buscando registros...";
+    btnBuscarPDFImpresion.disabled = true;
+
+    try {
+
+        const parametros = new URLSearchParams({
+            action: "registrosFolio",
+            cedi: cedi,
+            item: folio
+        });
+
+        const response = await fetch(
+            `${URL_API}?${parametros.toString()}`
+        );
+
+        const resultado = await response.json();
+
+        if (!resultado.success) {
+            throw new Error(resultado.mensaje || "No se pudo consultar el folio.");
+        }
+
+        if (!resultado.registros || resultado.registros.length === 0) {
+            throw new Error("No se encontraron registros para este folio.");
+        }
+
+        registrosSeleccionadosPDF = resultado.registros;
+
+        const detalleSeries = registrosSeleccionadosPDF.map((registro, index) => {
+            return `${index + 1}. Serie: ${registro.serie || "SIN SERIE"} — ${registro.estructura || "SIN ESTRUCTURA"} — ${registro.estado || "SIN ESTADO"}`;
+        }).join("\n");
+
+        resumen.textContent =
+            `Folio: ${folio}\n` +
+            `CEDI: ${cedi}\n` +
+            `Total de estructuras: ${registrosSeleccionadosPDF.length}\n\n` +
+            `DETALLE DE SERIES:\n${detalleSeries}`;
+
+        mensaje.textContent = "Registros encontrados correctamente.";
+
+        resultadoDiv.classList.remove("oculto");
+
+    } catch (error) {
+
+        console.error("Error al buscar registros del folio:", error);
+        mensaje.textContent = error.message;
+
+    } finally {
+
+        btnBuscarPDFImpresion.disabled = false;
+
+    }
+
+}
+
+
+// =====================================================
+// GENERAR PDF DE UN FOLIO RECUPERADO
+// =====================================================
+
+const btnDescargarPDFImpresion = document.getElementById(
+    "btnDescargarPDFImpresion"
+);
+
+if (btnDescargarPDFImpresion) {
+    btnDescargarPDFImpresion.addEventListener(
+        "click",
+        generarPDFImpresion
+    );
+}
+
+
+async function generarPDFImpresion() {
+
+    if (!registrosSeleccionadosPDF.length) {
+        alert("Primero debes buscar un folio.");
+        return;
+    }
+
+    // Guardar los datos del flujo normal
+    const datosAnteriores = {
+        folio: ultimoFolio,
+        fecha: ultimaFecha,
+        cedi: ultimoCedi,
+        auxiliar: ultimoAuxiliar,
+        lote: ultimoLoteRegistrado,
+        grupal: ultimoEsRegistroGrupal
+    };
+
+    // Datos del folio recuperado
+    ultimoFolio = pdfImpresionFolio.value.trim();
+
+    ultimoCedi = pdfImpresionCedi.value;
+
+    const fechaRegistro = registrosSeleccionadosPDF[0].fecha;
+
+    ultimaFecha = fechaRegistro
+    ? String(fechaRegistro).split("T")[0]
+    : "";
+
+    ultimoLoteRegistrado = registrosSeleccionadosPDF;
+
+    // Evitar que generarPDF vuelva a consultar el folio
+    ultimoEsRegistroGrupal = false;
+
+    btnDescargarPDFImpresion.disabled = true;
+
+    try {
+
+        await generarPDF();
+
+    } catch (error) {
+
+        console.error("Error al generar PDF de impresión:", error);
+
+        alert("No fue posible generar el PDF.");
+
+    } finally {
+
+        // Restaurar los datos del flujo normal
+        ultimoFolio = datosAnteriores.folio;
+        ultimaFecha = datosAnteriores.fecha;
+        ultimoCedi = datosAnteriores.cedi;
+        ultimoAuxiliar = datosAnteriores.auxiliar;
+        ultimoLoteRegistrado = datosAnteriores.lote;
+        ultimoEsRegistroGrupal = datosAnteriores.grupal;
+
+        btnDescargarPDFImpresion.disabled = false;
+
+    }
+
+}
+
+
+// =====================================================
+// ESCUCHAR CAMBIOS EN LOS FILTROS
+// =====================================================
+
+if (pdfImpresionCedi) {
+
+    pdfImpresionCedi.addEventListener("change", () => {
+
+        pdfImpresionFolio.value = "";
+        sugerenciasPDFImpresion.innerHTML = "";
+
+    });
+
+}
+
+
+if (pdfImpresionMes) {
+
+    pdfImpresionMes.addEventListener("change", () => {
+
+        pdfImpresionFolio.value = "";
+        sugerenciasPDFImpresion.innerHTML = "";
+
+    });
+
+}
+
+
+if (pdfImpresionEstructura) {
+
+    pdfImpresionEstructura.addEventListener("change", () => {
+
+        pdfImpresionFolio.value = "";
+        sugerenciasPDFImpresion.innerHTML = "";
+
+    });
+
+}
+
+
+// =====================================================
+// BUSCAR FOLIOS
+// =====================================================
+
+if (pdfImpresionFolio) {
+
+    pdfImpresionFolio.addEventListener("input", () => {
+
+        buscarFoliosPDFImpresion();
+
+    });
+
+}
+
+
+async function buscarFoliosPDFImpresion() {
+
+    const consultaActual = ++consultaFoliosPDF;
+
+    const cedi = pdfImpresionCedi.value;
+    const mes = pdfImpresionMes.value;
+    const estructura = pdfImpresionEstructura.value;
+
+    const folio = pdfImpresionFolio.value.trim();
+
+    sugerenciasPDFImpresion.innerHTML = "";
+
+
+    // Validar filtros
+
+    if (!cedi || !mes || !estructura || folio.length < 1) {
+        return;
+    }
+
+
+    try {
+
+        const parametros = new URLSearchParams({
+
+            action: "buscarFoliosPDF",
+            cedi: cedi,
+            mes: mes,
+            estructura: estructura,
+            folio: folio
+
+        });
+
+
+        const response = await fetch(
+            `${URL_API}?${parametros.toString()}`
+        );
+
+        const resultado = await response.json();
+
+
+        // Evitar mostrar resultados de búsquedas anteriores
+
+        if (consultaActual !== consultaFoliosPDF) {
+            return;
+        }
+
+
+        if (!resultado.success) {
+
+            console.error(resultado.mensaje);
+            return;
+
+        }
+
+
+        mostrarSugerenciasPDF(resultado.folios);
+
+
+    } catch (error) {
+
+        console.error(
+            "Error buscando folios para impresión:",
+            error
+        );
+
+    }
+
+}
+
+
+// =====================================================
+// MOSTRAR SUGERENCIAS
+// =====================================================
+
+function mostrarSugerenciasPDF(folios) {
+
+    // Limpiar resultados anteriores
+    sugerenciasPDFImpresion.innerHTML = "";
+
+    // Mostrar el contenedor
+    sugerenciasPDFImpresion.classList.remove("oculto");
+
+
+    if (!folios || folios.length === 0) {
+
+        const mensaje = document.createElement("div");
+
+        mensaje.textContent = "No se encontraron folios.";
+
+        sugerenciasPDFImpresion.appendChild(mensaje);
+
+        return;
+
+    }
+
+
+    folios.forEach(folio => {
+
+        const opcion = document.createElement("button");
+
+        opcion.type = "button";
+        opcion.textContent = folio;
+        opcion.className = "sugerencia-folio-pdf";
+
+
+        opcion.addEventListener("click", () => {
+
+            pdfImpresionFolio.value = folio;
+
+            sugerenciasPDFImpresion.innerHTML = "";
+
+            sugerenciasPDFImpresion.classList.add("oculto");
+
+        });
+
+
+        sugerenciasPDFImpresion.appendChild(opcion);
+
+    });
+
+}
+
+
+/* =====================================================
+   REGRESAR DE PDF PARA IMPRESIÓN
+===================================================== */
+
+const btnRegresarPDFImpresion =
+    document.getElementById(
+        "btnRegresarPDFImpresion"
+    );
+
+
+if (btnRegresarPDFImpresion) {
+
+    btnRegresarPDFImpresion.addEventListener(
+        "click",
+        regresarPDFImpresion
+    );
+
+}
+
+
+function regresarPDFImpresion() {
+
+    // Ocultar pantalla de impresión
+    document
+        .getElementById("seccionPDFImpresion")
+        .classList.add("oculto");
+
+    // Restaurar título
+    const titulo =
+        document.querySelector(".app-header h1");
+
+    if (titulo) {
+
+        titulo.textContent =
+            "RECUPERACIÓN DE ESTRUCTURAS DE METAL";
+
+    }
+
+    // Regresar al flujo de METAL
+    mostrarSecciones("seccionDatosGenerales");
+
+    const cedi =
+        document.getElementById("cedi").value;
+
+    if (cedi) {
+
+        verificarModoCamarones();
+
+    }
 
 }
 
